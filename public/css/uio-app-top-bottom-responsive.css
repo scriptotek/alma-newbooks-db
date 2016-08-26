@@ -1,0 +1,375 @@
+ /* Breaking text with hyphens with fallback to break-word and break-all */
+* {
+  word-wrap: break-word;
+  word-break: break-word;
+  word-break: hyphenate;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+body {
+  padding-bottom: 30rem; /* For the footer */
+  position: relative;
+  min-height: 100%;
+}
+
+
+/* Header and footer */
+
+#app-head-wrapper {
+  background: #ffffff;
+  border-bottom: 1px solid #cfcfcf;
+  margin-bottom: 10px;
+}
+
+.app-fluid-responsive #app-head-wrapper,
+.app-fluid-responsive #app-footer-wrapper,
+.app-fluid #app-head-wrapper,
+.app-fluid #app-footer-wrapper,
+#app-head-wrapper,
+#app-footer-wrapper {
+    width: 100%;
+    min-width: 0;
+}
+
+#app-name,
+.app-fluid #app-head-wrapper #app-name,
+.app-fluid-responsive #app-name {
+  left: 0 !important;
+}
+
+
+.app-fluid #app-head-wrapper #uiologo a,
+.app-fluid-responsive #uiologo a,
+#app-head-wrapper #uiologo a {
+  left: 15px;
+}
+
+#contact-info,
+#app-responsible,
+#app-footer hr {
+    clear: both !important;
+    float: left;
+    position: relative;
+}
+
+#contact-info {
+  background: url("/images/line-dotted-responsive.png") repeat-x scroll 2px 100%;
+  background-size: auto 2px;
+  padding-top: 80px;
+  margin-bottom: 10px;
+  width: 100%;
+  left: 0;
+}
+
+#app-responsible {
+    padding-bottom: 20px;
+}
+
+#app-footer hr {
+  background: url("/images/line-dotted-reponsive.png") repeat-x 0 0 transparent;
+  background-size: auto 2px;
+  border: none;
+  color: #fff;
+  height: 2px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+#app-head {
+  height: auto;
+  margin: 0 auto 0 auto;
+  background-color: transparent;
+  text-align: left;
+}
+
+.app-fluid-responsive #app-content,
+.app-fluid #app-content,
+#app-content {
+  font-size: 81.25%;
+  width: auto;
+  min-width: 0;
+  margin: 0 auto;
+  border-width: 1px 0 1px 0;
+  border-color: #cfcfcf;
+  padding: 10px 15px;
+  margin: 15px 0;
+}
+
+#app-footer-wrapper {
+  width: 100%;
+  border-top: 1px solid #cfcfcf;
+  padding-bottom: 0;
+}
+
+.app-fluid-responsive #app-head,
+.app-fluid #app-head,
+#app-head {
+  width: auto;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.app-fluid #app-footer,
+.app-fluid-responsive #app-footer,
+#app-footer {
+  background: url(/images/uio-app-uio-sickle-medium.png) no-repeat 15px 10px;
+  margin-bottom: 0;
+  margin: 0 auto;
+  padding: 24px 15px 15px;
+}
+
+/* Black line and UiO logo */
+#line-top, #uiologo {
+  height: 31px;
+}
+
+.app-fluid #uiologo,
+.app-fluid-responsive #uiologo,
+#uiologo {
+  width: auto;
+  display: block;
+  float: none;
+  height: 19px;
+  font-size: 0.1em;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.app-fluid-responsive .info-link {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+#uiologo a, 
+#uiologo a:hover,
+#uiologo a:focus {
+  background: url("/images/uio-small-black-responsive.png") no-repeat scroll 0 0;
+    background-size: 90%;
+}
+
+#uiologo.english-uiologo a, 
+#uiologo.english-uiologo a:hover,
+#uiologo.english-uiologo a:focus {
+  background-image: none;
+  background: url("/images/uio-small-black-en-responsive.png") no-repeat scroll 0 0;
+  background-size: 85%;
+}
+
+#app-head form.app-form {
+  display: none;
+}
+
+/* Head menu */
+#responsive-menu {
+    background: url(/images/uio-app-menu-responsive.png) no-repeat scroll 0 0 transparent;
+    display: block;
+    position: absolute;
+    top: -3px;
+    right: 0;
+    height: 32px;
+    width: 32px;
+    margin-right: 18px;
+    text-indent: -9999px;
+}
+
+#head-login {
+    font-size: 0.70em;
+    top: 37px;
+    right: 15px !important;
+    z-index: 0;
+}
+#head-login.multiple-links {
+    right: 0 !important;
+    border-color: #414141;
+    display: none;
+    background-color: #272727;
+    width: 100%;
+    height: auto;
+    z-index: 1;
+    font-size: 0.80em !important;
+}
+
+#head-login ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#head-login.multiple-links ul li {
+    background-image: none;
+    border-top: 1px solid #414141;
+    color: #eeeeee;
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    width: auto;
+}
+
+ul #user-fullname, 
+ul #login-out-link {
+    top: 0;
+}
+
+#head-login.multiple-links ul li#user-fullname, #app-head #head-login ul li#user-fullname {
+  display: none;
+}
+
+.no-touch #head-login.multiple-links ul li:hover,
+.no-touch #head-login.multiple-links ul li:first-child:hover,
+.no-touch #head-login.multiple-links ul li:focus,
+.no-touch #head-login.multiple-links ul li:first-child:focus  {
+    background-color: #5d5d5c;
+}
+
+#app-head #head-login.multiple-links ul li:first-child {
+    border-top: none;
+}
+
+#head-login.multiple-links a,
+#head-login.multiple-links #login-out-link a {
+    color: #ffffff;
+    display: block;
+    padding: 0.7em 1.3em 0.7em 0.7em;
+    outline: none;
+}
+
+.app-fluid #head-menu,
+.app-fluid-responsive #head-menu,
+#head-menu {
+  font-size: 0.7em;
+  right: 0;
+  top: 0;
+  float: right;
+  margin-right: 10px;
+} 
+
+#language-select {
+  background: url(/images/uio-app-dropdown-toggle.png) no-repeat scroll top right transparent;
+  color: #ffffff !important;
+  display: inline-block;
+  float: right;
+  position: relative;
+  bottom: 40px;
+  margin-right: 10px;
+  left: 10px;
+  font-size: 0.9em;
+  padding: 1px 20px 0 0;
+  font-weight: normal;
+}
+
+#language-select,
+#language-select:hover,
+#language-select:focus {
+  text-decoration: none;
+}
+
+#head-menu ul {
+  background: #ffffff;
+  display: none;
+  float: none;
+  font-weight: normal;
+  border: 1px solid #cfcfcf;
+  position: relative;
+  bottom: 15px;
+  z-index: 1;
+}
+
+#head-menu ul li {
+  display: block;
+  font-size: 1.1em;
+  margin: 0;
+  position: relative;
+  bottom: 10px;
+  padding: 5px 10px;
+}
+
+#head-menu ul li:first-child {
+  padding-top: 18px;
+}
+
+#head-menu ul li:last-child {
+  padding-bottom: 0;
+}
+
+#head-menu ul li a {
+  color: #0b5a9d;
+}
+/* ^Head menu */
+
+/* App-name */
+#app-name {
+  font-size: 1.5em;
+  position: relative;
+  top: 0;
+  margin: 15px 0;
+  left: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+#tagline {
+  color: #000;
+  font-size: 0.51em;
+  margin-top: 10px;
+  line-height: 1.2em;
+  display: block;
+}
+/* ^App-name */
+
+/* Footer */
+#app-footer div span, #app-footer span.vrtx-label {
+  color: #2b2b2b;
+}
+
+#app-footer div span a {
+  line-height: 1.5em;
+}
+
+#contact-info,
+#app-responsible {
+  font-size: 100%;
+  line-height: 1.2em;
+}
+
+#app-footer div.phone-fax-email {
+    padding: 0 0 10px 0;
+}
+
+#app-footer {
+  font: normal 0.85em/1.25em Arial, sans-serif;
+}
+/* ^Footer */
+
+/* privacy footer */
+.info-link-wrapper {
+  font-size: 0.90em;
+  padding: 12px 35px 12px 15px;
+  position: relative;
+  text-align: left;
+}
+
+.info-link-wrapper a {
+  font-weight: normal;
+}
+
+.info-link {
+  width: auto;
+  margin: 0;
+}
+
+.info-link-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  left: auto;
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: url(/images/info-link-close-responsive.png) no-repeat 0 0;
+  background-size: auto 100%;
+}
+/* ^privacy footer */

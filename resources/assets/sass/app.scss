@@ -1,0 +1,51 @@
+
+// Fonts
+// @import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+
+// Variables
+@import "variables";
+
+// Bootstrap
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+
+.editor {
+  height: 200px;
+}
+
+.clickable-row:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+/* Override bootstrap to make it look more UiO */
+.btn-primary:hover {
+  border-color: #5494cc;
+  background-color: #5494cc;
+}
+.form-control {
+    box-shadow: none;
+}
+
+#content {
+  ul {
+    list-style-type: none;
+    position: relative;
+
+    > li {
+      position: relative;
+
+      &:before {
+        content: "\25A0";
+        color: #666;
+        margin-left: -2.5ex;
+        position: absolute;
+        top: 0.05em;
+        left: 0;
+        width: 1em;
+        overflow: hidden;
+        font-size: .8em;
+      }
+    }
+  }
+}
