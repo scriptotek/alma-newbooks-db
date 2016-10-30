@@ -122,8 +122,12 @@ class AnalyticsReportImporter
 
         // Make dates Carbon compatible
         foreach ($row as $k => $v) {
-            if (preg_match('/^\d{4}-\d{2}-\d{2}T/', $v)) {
-                $row[$k] = str_replace('T', ' ', $v);
+            if (preg_match('/^\d{4}-\d{2}-\d{2}T/', $row[$k])) {
+                $row[$k] = str_replace('T', ' ', $row[$k]);
+            }
+
+            if ($row[$k] == '0000-00-00 00:00:00') {
+                $row[$k] = null;
             }
         }
 
