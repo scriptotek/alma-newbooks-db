@@ -19,7 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->increments('id');
 
             // Sort date made up from 'receiving date' for print or 'activation date' for electronic
-            $table->date(Document::RECEIVING_OR_ACTIVATION_DATE)->nullable();
+            $table->dateTime(Document::RECEIVING_OR_ACTIVATION_DATE)->nullable();
 
             // PO Line
             $table->string(Document::PO_ID, 30)->nullable();
@@ -42,7 +42,7 @@ class CreateDocumentsTable extends Migration
             $table->text('po_modified_by')->nullable();
             $table->dateTime('po_creation_date')->nullable();
             $table->dateTime('po_modification_date')->nullable();
-            $table->date('sent_date')->nullable();
+            $table->dateTime('sent_date')->nullable();
 
             // Bibliographic data
             $table->text(Document::MMS_ID)->nullable();
