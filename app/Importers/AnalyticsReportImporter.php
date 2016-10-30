@@ -82,7 +82,7 @@ class AnalyticsReportImporter
             $row = self::cleanRow($row);
         } catch (InvalidRowException $e) {
             // ignore this row
-            return false;
+            return null;
         }
 
         $key = self::getKey($row);
@@ -91,7 +91,7 @@ class AnalyticsReportImporter
         }
         $doc = Document::firstOrNew($key);
         if (is_null($doc->id) && !$create) {
-            return false;
+            return null;
         }
         foreach ($row as $k => $v) {
             if (!in_array($k, Document::getFields())) {
@@ -110,6 +110,6 @@ class AnalyticsReportImporter
 
         $doc->save();
 
-        return true;
+        return $doc;
     }
 }

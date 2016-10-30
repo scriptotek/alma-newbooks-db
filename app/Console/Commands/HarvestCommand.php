@@ -7,6 +7,7 @@ use App\Importers\AnalyticsReportImporter;
 use Illuminate\Console\Command;
 use Scriptotek\Alma\Analytics\Report;
 use Scriptotek\Alma\Client as AlmaClient;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class HarvestCommand extends Command
 {
@@ -192,7 +193,21 @@ class HarvestCommand extends Command
     {
         $n = 0; $m = 0;
         foreach ($report->rows as $row) {
-            if (AnalyticsReportImporter::importRowFromApi($row->toArray(), $create)) {
+            $doc = AnalyticsReportImporter::importRowFromApi($row->toArray(), $create);
+            if (!is_null($doc)) {
+                if ($this->getOutput()->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
+                    // This actually takes an extra query, so we don't prepare the message
+                    // unless we're going to show it, hence the if-test.
+                    $this->comment(sprintf("%s %8s %11s %11s %11s %11s %20s",
+                         $doc->receiving_or_activation_date,
+                         $doc->material_type,
+                         $doc->po_id,
+                         $doc->barcode,
+                         $doc->reporting_code,
+                         substr($doc->process_type, 0, 11),
+                         substr($doc->title, 0, 20)
+                    ), OutputInterface::VERBOSITY_VERBOSE);
+                }
                 $m++;
             }
             $n++;
