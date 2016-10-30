@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Nye bøker @ UiO - @yield('title')</title>
+    <title>Tilvekstsdatabase - @yield('title')</title>
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
@@ -41,7 +41,7 @@
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <!--<img src="/images/uio-app-small-black-eng-responsive.png" alt="">-->
-                    New books @ UiO
+                    Tilvekstsdatabase for UBO
                 </a>
             </div>
 
@@ -105,8 +105,8 @@
         <div id="contact-info">
           <div class="phone-fax-email">
             <span class="vrtx-label">Contact information</span>
-            <span class="email">E-mail: something@uio.no</span>
-            <span class="tel">Phone: 99 99 99 99</span>
+            <span class="email">E-mail: someone@ub.uio.no</span>
+            <!-- <span class="tel">Phone: 99 99 99 99</span>-->
           </div>
         </div>
         <div id="app-responsible">
