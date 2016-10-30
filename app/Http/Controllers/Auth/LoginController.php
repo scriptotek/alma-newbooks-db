@@ -34,4 +34,16 @@ class LoginController extends Controller
     {
         $this->middleware('guest', ['except' => 'logout']);
     }
+
+    /**
+     * Display SAML errors.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function error()
+    {
+        return view('auth.error', [
+            'errors' => session()->get('saml2_error', []),
+        ]);
+    }
 }

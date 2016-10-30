@@ -29,6 +29,6 @@ Route::get('reports/{report}/delete', 'ReportsController@delete');
 Route::resource('reports', 'ReportsController');
 
 
-Route::get('saml2/error', 'Auth\Saml2Controller@error');
+Route::get('saml2/error', 'Auth\LoginController@error');
 
 Auth::routes();
