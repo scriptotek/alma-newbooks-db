@@ -22,7 +22,7 @@ class CreateDocumentsTable extends Migration
             $table->date(Document::RECEIVING_OR_ACTIVATION_DATE)->nullable();
 
             // PO Line
-            $table->string(Document::PO_ID, 50)->nullable()->unique();
+            $table->string(Document::PO_ID, 30)->nullable();
 
             $table->text('acquisition_method')->nullable();
             $table->text('additional_order_reference')->nullable();
@@ -72,7 +72,7 @@ class CreateDocumentsTable extends Migration
             $table->text('temporary_location_name')->nullable();
 
             // Physical item
-            $table->text('item_id')->nullable();
+            $table->string(Document::ITEM_ID, 30)->nullable()->unique();
             $table->text('item_policy')->nullable();
             $table->text('barcode')->nullable();
             $table->text('item_creator')->nullable();
@@ -81,7 +81,7 @@ class CreateDocumentsTable extends Migration
             $table->dateTime('receiving_date')->nullable();
 
             // Electronic portfolio
-            $table->text('portfolio_id')->nullable();
+            $table->string(Document::PORTFOLIO_ID, 30)->nullable()->unique();
             $table->text('collection_name')->nullable();
             $table->date('portfolio_creation_date')->nullable();
             $table->date('activation_date')->nullable();

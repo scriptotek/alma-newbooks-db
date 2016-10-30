@@ -152,6 +152,21 @@ class AnalyticsReportImporter
         return $row;
     }
 
+    public static function getKey($row)
+    {
+        $keys = [
+            Document::ITEM_ID,      // Physical item report
+            Document::PORTFOLIO_ID, // Electronic portfolio report
+            Document::MMS_ID,       // Bibliographic record report
+        ];
+
+        foreach ($keys as $k) {
+            if (isset($row[$k])) {
+                return [$k => $row[$k]];
+            }
+        }
+    }
+
     public static function importRowFromApi($row, $create = false)
     {
         try {
@@ -161,7 +176,10 @@ class AnalyticsReportImporter
             return false;
         }
 
-        $key = isset($row[Document::PO_ID]) ? [Document::PO_ID => $row[Document::PO_ID]] : [Document::MMS_ID => $row[Document::MMS_ID]];
+        $key = self::getKey($row);
+        if (!$key) {
+            throw new \RuntimeError('No key column found for row: ' . json_encode($row));
+        }
         $doc = Document::firstOrNew($key);
         if (is_null($doc->id) && !$create) {
             return false;

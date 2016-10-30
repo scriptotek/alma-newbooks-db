@@ -9,6 +9,8 @@ class Document extends Model
     const RECEIVING_OR_ACTIVATION_DATE = 'receiving_or_activation_date';
     const PO_ID = 'po_id';
     const MMS_ID = 'mms_id';
+    const ITEM_ID = 'item_id';
+    const PORTFOLIO_ID = 'portfolio_id';
 
     /**
      * Indicates if the model should be timestamped.
