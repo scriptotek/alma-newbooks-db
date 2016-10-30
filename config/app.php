@@ -170,6 +170,7 @@ return [
         Thujohn\Rss\RssServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Scriptotek\Alma\Providers\AlmaServiceProvider::class,
+        Aacotroneo\Saml2\Saml2ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -231,6 +232,7 @@ return [
         'Ekko' => Laravelista\Ekko\Facades\Ekko::class,
         'Rss' => Thujohn\Rss\RssFacade::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Saml2' => Aacotroneo\Saml2\Facades\Saml2Auth::class,
 //        'Alma' => Scriptotek\Alma\Facades\Alma::class,
 
     ],

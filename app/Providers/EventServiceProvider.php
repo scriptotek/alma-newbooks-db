@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -13,20 +12,15 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
-        ],
+        //
     ];
 
-    /**
-     * Register any events for your application.
+     /**
+     * The subscriber classes to register.
      *
-     * @return void
+     * @var array
      */
-    public function boot()
-    {
-        parent::boot();
-
-        //
-    }
+    protected $subscribe = [
+        'App\Listeners\Saml2EventSubscriber',
+    ];
 }
