@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('docs', 'DocumentsController', ['only' => [
+Route::resource('documents', 'DocumentsController', ['only' => [
     'index', 'show'
 ]]);
 
