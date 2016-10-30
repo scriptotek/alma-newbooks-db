@@ -14,6 +14,13 @@ class HarvestCommand extends Command
     protected $reports = [
         [
             'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/new_physical',
+            'filter' => '
+                <sawx:expr op="greaterOrEqual" xsi:type="sawx:comparison"
+                       xmlns:sawx="com.siebel.analytics.web/expression/v1.1"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                   <sawx:expr xsi:type="sawx:sqlExpression">"Physical Item Details"."Receiving   Date"</sawx:expr>
+                   <sawx:expr xsi:type="sawx:sqlExpression">TIMESTAMPADD(SQL_TSI_DAY, -%d, CURRENT_DATE)</sawx:expr>
+                </sawx:expr>',
             'headers' => [
                 'author',
                 'bibliographic_level',
@@ -66,6 +73,13 @@ class HarvestCommand extends Command
         ],
         [
             'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/new_electronic',
+            'filter' => '
+                <sawx:expr op="greaterOrEqual" xsi:type="sawx:comparison"
+                       xmlns:sawx="com.siebel.analytics.web/expression/v1.1"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                   <sawx:expr xsi:type="sawx:sqlExpression">"E-Inventory"."Portfolio Activation Date"."Portfolio Activation Date"</sawx:expr>
+                   <sawx:expr xsi:type="sawx:sqlExpression">TIMESTAMPADD(SQL_TSI_DAY, -%d, CURRENT_DATE)</sawx:expr>
+                </sawx:expr>',
             'headers' => [
                 'author',
                 'bibliographic_level',
@@ -148,7 +162,7 @@ class HarvestCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'harvest';
+    protected $signature = 'harvest {days=60}';
 
     /**
      * The console command description.
@@ -176,8 +190,6 @@ class HarvestCommand extends Command
      */
     public function importReport(Report $report, $create)
     {
-        $this->info('Fetching ' . $report->path);
-
         $n = 0; $m = 0;
         foreach ($report->rows as $row) {
             if (AnalyticsReportImporter::importRowFromApi($row->toArray(), $create)) {
@@ -194,11 +206,12 @@ class HarvestCommand extends Command
     /**
      * @param string $path
      * @param string[] $headers
+     * @param string $filter
      * @param boolean $create
      */
-    public function fetch($path, $headers, $create)
+    public function fetch($path, $headers, $filter, $create)
     {
-        $report = $this->alma->analytics->get($path, $headers);
+        $report = $this->alma->analytics->get($path, $headers, $filter);
         $this->importReport($report, $create);
     }
 
@@ -207,10 +220,18 @@ class HarvestCommand extends Command
      */
     public function handle()
     {
+        $days = $this->argument('days');
+
         $n = 0;
         foreach ($this->reports as $report) {
+            $path = $report['path'];
+
+            $this->info("Fetching last {$days} days of records from {$path}");
+
+            $filter = sprintf($report['filter'], $days);
+
             //if ($n > 2)
-                $this->fetch($report['path'], $report['headers'], array_get($report, 'create', true));
+                $this->fetch($path, $report['headers'], $filter, array_get($report, 'create', true));
             $n++;
         }
 
