@@ -17,6 +17,10 @@ class Report extends Model
         'name', 'querystring', 'created_by', 'updated_by', 'days_start', 'days_end',
     ];
 
+    protected $casts = [
+        'options' => 'json'
+    ];
+
     /**
      * Get the user that created the report.
      */
