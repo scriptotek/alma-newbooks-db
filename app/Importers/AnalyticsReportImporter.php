@@ -76,7 +76,7 @@ class AnalyticsReportImporter
         }
     }
 
-    public static function importRowFromApi($row, $create = false)
+    public static function docFromRow($row, $create = false)
     {
         try {
             $row = self::cleanRow($row);
@@ -107,8 +107,6 @@ class AnalyticsReportImporter
         } elseif (isset($row['receiving_date'])) {
             $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} = $row['receiving_date'];
         }
-
-        $doc->save();
 
         return $doc;
     }

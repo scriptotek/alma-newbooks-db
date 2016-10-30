@@ -191,31 +191,34 @@ class HarvestCommand extends Command
      */
     public function importReport(Report $report, $create)
     {
-        $n = 0; $m = 0;
+        $n = 0; $m = 0; $cn = 0; $cm = 0;
         foreach ($report->rows as $row) {
-            $doc = AnalyticsReportImporter::importRowFromApi($row->toArray(), $create);
-            if (!is_null($doc)) {
-                if ($this->getOutput()->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-                    // This actually takes an extra query, so we don't prepare the message
-                    // unless we're going to show it, hence the if-test.
-                    $this->comment(sprintf("%s %8s %11s %11s %11s %11s %20s",
-                         $doc->receiving_or_activation_date,
-                         $doc->material_type,
-                         $doc->po_id,
-                         $doc->barcode,
-                         $doc->reporting_code,
-                         substr($doc->process_type, 0, 11),
-                         substr($doc->title, 0, 20)
-                    ), OutputInterface::VERBOSITY_VERBOSE);
-                }
-                $m++;
+            $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $create);
+            if (is_null($doc)) {
+                continue;
             }
+            $m++;
+
+            if (!$doc->exists) {
+                $cn++;
+                $this->comment("NEW  {$doc->receiving_or_activation_date}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
+
+            } else if ($doc->isDirty()) {
+                $cm++;
+                $this->comment("MOD  {$doc->receiving_or_activation_date}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
+                foreach ($doc->getDirty() as $k => $v) {
+                    $this->comment(" - '$k' changed from '" . $doc->getOriginal($k) . "' to '$v'", OutputInterface::VERBOSITY_VERBOSE);
+                }
+            }
+
+            $doc->save();
+
             $n++;
             if ($n % 1000 == 0) {
                 $this->info('Imported ' . $m . ' of ' . $n . ' rows');
             }
         }
-        $this->info('Imported ' . $m . ' of ' . $n . ' rows');
+        $this->info("Imported {$m} of {$n} rows. {$cn} new documents, {$cm} modified.");
     }
 
     /**
