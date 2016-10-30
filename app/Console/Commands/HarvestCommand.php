@@ -153,10 +153,9 @@ class HarvestCommand extends Command
      * @param string[] $headers
      * @param boolean $create
      */
-    public function importReport(Report $report, $headers, $create)
+    public function importReport(Report $report, $create)
     {
         $this->info('Fetching ' . $report->path);
-        $report->setHeaders($headers);
 
         $n = 0; $m = 0;
         foreach ($report->rows as $row) {
@@ -178,8 +177,8 @@ class HarvestCommand extends Command
      */
     public function fetch($path, $headers, $create)
     {
-        $report = $this->alma->analytics[$path];
-        $this->importReport($report, $headers, $create);
+        $report = $this->alma->analytics->get($path, $headers);
+        $this->importReport($report, $create);
     }
 
     /**

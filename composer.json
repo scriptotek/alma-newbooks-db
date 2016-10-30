@@ -16,7 +16,7 @@
         "laravelista/ekko": "^1.2",
         "mayconbordin/rss-l5": "~1.1",
         "barryvdh/laravel-debugbar": "^2.2",
-        "scriptotek/alma-client": "^0.2",
+        "scriptotek/alma-client": "^0.3",
         "aacotroneo/laravel-saml2": "^0.8.0"
     },
     "require-dev": {
