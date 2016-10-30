@@ -83,43 +83,53 @@ class HarvestCommand extends Command
                 'portfolio_id',
             ]
         ],
-        [
-            'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/modified_po_lines',
-            'create' => false,
-            'headers' => [
-                Document::MMS_ID,
-                'fund_ledger_code',
-                'fund_ledger_name',
-                'fund_type',
-                'acquisition_method',
-                'additional_order_reference',
-                'cancellation_reason',
-                'order_line_type_code',
-                'order_line_type',
-                'po_creation_date',
-                'po_creator',
-                'po_creation_date',
-                'po_creator',
-                'po_modification_date',
-                'po_modified_by',
-                Document::PO_ID,
-                'receiving_note',
-                'receiving_status',
-                'reporting_code',
-                'sent_date',
-                'source_type',
-                'vendor_code',
-            ]
-        ],
-        [
-            'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/modified_bibliographic',
-            'create' => false,
-            'headers' => [
-                Document::MMS_ID,
-                'biblio_modified',
-                'biblio_modifiedby',
-            ]
-        ]
+
+        /* @TODO: Additional reports:
+
+             - modified_bibliographic: use to get notified about updates to the
+               bibliographic record after the document is no longer new
+               (catalogued or classified long after it was received)
+             - modifed_items or holdings: use to get notified about call number
+               changes in the same way.
+        */
+
+        // [
+        //     'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/modified_po_lines',
+        //     'create' => false,
+        //     'headers' => [
+        //         Document::MMS_ID,
+        //         'fund_ledger_code',
+        //         'fund_ledger_name',
+        //         'fund_type',
+        //         'acquisition_method',
+        //         'additional_order_reference',
+        //         'cancellation_reason',
+        //         'order_line_type_code',
+        //         'order_line_type',
+        //         'po_creation_date',
+        //         'po_creator',
+        //         'po_creation_date',
+        //         'po_creator',
+        //         'po_modification_date',
+        //         'po_modified_by',
+        //         Document::PO_ID,
+        //         'receiving_note',
+        //         'receiving_status',
+        //         'reporting_code',
+        //         'sent_date',
+        //         'source_type',
+        //         'vendor_code',
+        //     ]
+        // ],
+        // [
+        //     'path' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/modified_bibliographic',
+        //     'create' => false,
+        //     'headers' => [
+        //         Document::MMS_ID,
+        //         'biblio_modified',
+        //         'biblio_modifiedby',
+        //     ]
+        // ]
     ];
 
     /**
