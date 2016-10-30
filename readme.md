@@ -43,9 +43,13 @@ For all date fields, set date format ODBC: YYYY-MM-DD.
 
 ### 1) `new_physical`: Physical books received recently
 
-Items whose `"Receiving   Date"` [sic] is in the last 10 days, and
-where `"Suppressed From Discovery" = 'No'`
-(<s>and `"Material Type" <> 'Journal'`</s>):
+List of physical items who are not deleted (lifecycle != "Deleted"),
+and whose bibliographic record is not "supressed from discovery", sorted
+and limited by `"Receiving   Date"` [sic].
+
+We limit by material type to exclude e.g. "Journal", "Issue" and so on.
+The exact list isn't set in stone. We include "None", since, for some reason,
+we have quite a long list of items with this value.
 
 ```sql
 SELECT
@@ -61,34 +65,47 @@ SELECT
    "Physical Items"."Bibliographic Details"."Publisher" s_9,
    "Physical Items"."Bibliographic Details"."Series" s_10,
    "Physical Items"."Bibliographic Details"."Title" s_11,
-   "Physical Items"."Holding Details"."Holding Id" s_12,
-   "Physical Items"."Holding Details"."Permanent Call Number" s_13,
-   "Physical Items"."Location"."Library Name" s_14,
-   "Physical Items"."Location"."Location Name" s_15,
-   "Physical Items"."Physical Item Details"."Barcode" s_16,
-   "Physical Items"."Physical Item Details"."Base Status" s_17,
-   "Physical Items"."Physical Item Details"."Creation Date" s_18,
-   "Physical Items"."Physical Item Details"."Creator" s_19,
-   "Physical Items"."Physical Item Details"."Item Id" s_20,
-   "Physical Items"."Physical Item Details"."Item Policy" s_21,
-   "Physical Items"."Physical Item Details"."Last Loan Date" s_22,
-   "Physical Items"."Physical Item Details"."Material Type" s_23,
-   "Physical Items"."Physical Item Details"."Process Type" s_24,
-   "Physical Items"."Physical Item Details"."Receiving   Date" s_25,
-   "Physical Items"."Physical Item Details"."Receiving Date And Time" s_26,
-   "Physical Items"."Physical Item Details"."Temporary Physical Location In Use" s_27,
-   "Physical Items"."PO Line"."Acquisition Method" s_28,
-   "Physical Items"."PO Line"."PO Line Reference" s_29,
-   "Physical Items"."PO Line"."Receiving Note" s_30,
-   "Physical Items"."PO Line"."Receiving Status" s_31,
-   "Physical Items"."PO Line"."Sent Date" s_32,
-   SUBSTRING("Physical Items"."Bibliographic Details"."ISBN" FROM 0 FOR POSITION(';' IN "Physical Items"."Bibliographic Details"."ISBN")-1) s_33
+   "Physical Items"."Fund Ledger"."Fund Ledger Code" s_12,
+   "Physical Items"."Fund Ledger"."Fund Ledger Name" s_13,
+   "Physical Items"."Fund Ledger"."Fund Type" s_14,
+   "Physical Items"."Holding Details"."Holding Id" s_15,
+   "Physical Items"."Holding Details"."Permanent Call Number" s_16,
+   "Physical Items"."Location"."Library Name" s_17,
+   "Physical Items"."Location"."Location Name" s_18,
+   "Physical Items"."Physical Item Details"."Barcode" s_19,
+   "Physical Items"."Physical Item Details"."Base Status" s_20,
+   "Physical Items"."Physical Item Details"."Creation Date" s_21,
+   "Physical Items"."Physical Item Details"."Creator" s_22,
+   "Physical Items"."Physical Item Details"."Item Id" s_23,
+   "Physical Items"."Physical Item Details"."Item Policy" s_24,
+   "Physical Items"."Physical Item Details"."Last Loan Date" s_25,
+   "Physical Items"."Physical Item Details"."Material Type" s_26,
+   "Physical Items"."Physical Item Details"."Process Type" s_27,
+   "Physical Items"."Physical Item Details"."Receiving   Date" s_28,
+   "Physical Items"."Physical Item Details"."Receiving Date And Time" s_29,
+   "Physical Items"."Physical Item Details"."Temporary Physical Location In Use" s_30,
+   "Physical Items"."PO Line"."Acquisition Method" s_31,
+   "Physical Items"."PO Line"."Additional Order Reference" s_32,
+   "Physical Items"."PO Line"."Cancellation Reason" s_33,
+   "Physical Items"."PO Line"."Order Line Type Code" s_34,
+   "Physical Items"."PO Line"."Order Line Type" s_35,
+   "Physical Items"."PO Line"."PO Creation Date" s_36,
+   "Physical Items"."PO Line"."PO Line Creator" s_37,
+   "Physical Items"."PO Line"."PO Line Modified By" s_38,
+   "Physical Items"."PO Line"."PO Line Reference" s_39,
+   "Physical Items"."PO Line"."PO Modification Date" s_40,
+   "Physical Items"."PO Line"."Receiving Note" s_41,
+   "Physical Items"."PO Line"."Receiving Status" s_42,
+   "Physical Items"."PO Line"."Reporting Code" s_43,
+   "Physical Items"."PO Line"."Sent Date" s_44,
+   "Physical Items"."PO Line"."Source Type" s_45,
+   "Physical Items"."PO Line"."Vendor Code" s_46,
+   SUBSTRING("Physical Items"."Bibliographic Details"."ISBN" FROM 0 FOR POSITION(';' IN "Physical Items"."Bibliographic Details"."ISBN")-1) s_47
 FROM "Physical Items"
 WHERE
-(("Bibliographic Details"."Suppressed From Discovery" = 'No') AND ("Physical Item Details"."Receiving   Date" >= TIMESTAMPADD(SQL_TSI_DAY, -30, CURRENT_DATE)))
-ORDER BY 1, 2 ASC NULLS FIRST, 12 ASC NULLS FIRST, 10 ASC NULLS FIRST, 34 ASC NULLS FIRST, 5 ASC NULLS FIRST, 7 ASC NULLS FIRST, 6 ASC NULLS FIRST, 8 ASC NULLS FIRST, 4 ASC NULLS FIRST, 29 ASC NULLS FIRST, 30 ASC NULLS FIRST, 31 ASC NULLS FIRST, 32 ASC NULLS FIRST, 33 ASC NULLS FIRST, 26 ASC NULLS FIRST, 11 ASC NULLS FIRST, 3 ASC NULLS FIRST, 16 ASC NULLS FIRST, 14 ASC NULLS FIRST, 19 ASC NULLS FIRST, 20 ASC NULLS FIRST, 17 ASC NULLS FIRST, 21 ASC NULLS FIRST, 27 ASC NULLS FIRST, 23 ASC NULLS FIRST, 28 ASC NULLS FIRST, 24 ASC NULLS FIRST, 22 ASC NULLS FIRST, 13 ASC NULLS FIRST, 25 ASC NULLS FIRST, 18 ASC NULLS FIRST, 9 ASC NULLS FIRST, 15 ASC NULLS FIRST
+(("Bibliographic Details"."Suppressed From Discovery" = 'No') AND ("Physical Item Details"."Lifecycle" <> 'Deleted') AND ("PO Line"."PO Line Reference" LIKE 'POL-%') AND ("Physical Item Details"."Material Type" IN ('Audiobook', 'Blu-Ray', 'Blu-Ray And DVD', 'Book', 'DVD', 'None')))
+ORDER BY 1, 30 DESC NULLS LAST, 2 ASC NULLS FIRST, 12 ASC NULLS FIRST, 10 ASC NULLS FIRST, 48 ASC NULLS FIRST, 5 ASC NULLS FIRST, 7 ASC NULLS FIRST, 6 ASC NULLS FIRST, 8 ASC NULLS FIRST, 4 ASC NULLS FIRST, 32 ASC NULLS FIRST, 40 ASC NULLS FIRST, 42 ASC NULLS FIRST, 43 ASC NULLS FIRST, 45 ASC NULLS FIRST, 29 ASC NULLS FIRST, 11 ASC NULLS FIRST, 3 ASC NULLS FIRST, 19 ASC NULLS FIRST, 17 ASC NULLS FIRST, 22 ASC NULLS FIRST, 23 ASC NULLS FIRST, 20 ASC NULLS FIRST, 24 ASC NULLS FIRST, 26 ASC NULLS FIRST, 31 ASC NULLS FIRST, 27 ASC NULLS FIRST, 25 ASC NULLS FIRST, 16 ASC NULLS FIRST, 28 ASC NULLS FIRST, 21 ASC NULLS FIRST, 9 ASC NULLS FIRST, 18 ASC NULLS FIRST, 44 ASC NULLS FIRST, 13 ASC NULLS FIRST, 34 ASC NULLS FIRST, 37 ASC NULLS FIRST, 33 ASC NULLS FIRST, 35 ASC NULLS FIRST, 41 ASC NULLS FIRST, 39 ASC NULLS FIRST, 46 ASC NULLS FIRST, 47 ASC NULLS FIRST, 14 ASC NULLS FIRST, 15 ASC NULLS FIRST, 36 ASC NULLS FIRST, 38 ASC NULLS FIRST
 FETCH FIRST 500001 ROWS ONLY
-
 ```
 
 Make sure not to include additional columns with names that clash with existing columns
@@ -98,8 +115,8 @@ two columns with the same name.
 
 ### 2) `new_electronic`: Electronic books activated recently
 
-E-inventory where `"Portfolio Activation Date"` is in the last 10 days,
-and where `"Material Type" = 'Book'` (to exclude journals, etc.):
+E-inventory having `"Material Type" = 'Book'` (to exclude journals, etc.),
+sorted and limited by `"Portfolio Activation Date"`.
 
 ```sql
 SELECT
@@ -131,16 +148,15 @@ SELECT
    "E-Inventory"."Portfolio"."Portfolio Id" s_25
 FROM "E-Inventory"
 WHERE
-(("Portfolio"."Material Type" = 'Book') AND ("Portfolio Activation Date"."Portfolio Activation Date" >=  TIMESTAMPADD(SQL_TSI_DAY, -30, CURRENT_DATE)) AND ("Bibliographic Details"."Suppressed From Discovery" = 'No'))
+(("Portfolio"."Material Type" = 'Book') AND ("Bibliographic Details"."Suppressed From Discovery" = 'No'))
 ORDER BY 1, 15 DESC NULLS LAST, 21 ASC NULLS FIRST, 22 ASC NULLS FIRST, 23 ASC NULLS FIRST, 19 ASC NULLS FIRST, 20 ASC NULLS FIRST, 14 ASC NULLS FIRST, 12 ASC NULLS FIRST, 16 ASC NULLS FIRST, 24 ASC NULLS FIRST, 25 ASC NULLS FIRST, 7 ASC NULLS FIRST, 11 ASC NULLS FIRST, 13 ASC NULLS FIRST, 26 ASC NULLS FIRST, 4 ASC NULLS FIRST, 5 ASC NULLS FIRST, 6 ASC NULLS FIRST, 9 ASC NULLS FIRST, 8 ASC NULLS FIRST, 10 ASC NULLS FIRST, 2 ASC NULLS FIRST, 3 ASC NULLS FIRST, 17 ASC NULLS FIRST, 18 ASC NULLS FIRST
 FETCH FIRST 500001 ROWS ONLY
 ```
 
-### 3) `new_po_lines`: PO lines modified recently
+### 3) `new_po_lines`: PO lines modified recently (not in use atm)
 
-PO lines modified in the last 10 days
-where `"Reporting Code" IN ('ELECTRONICBOOK', 'PRINTBOOK'))` and
-`"Fund Type" = 'Allocated fund'`:
+PO lines having `"Reporting Code" IN ('ELECTRONICBOOK', 'PRINTBOOK'))` and
+`"Fund Type" = 'Allocated fund'`, sorted and limited by modification date.
 
 ```sql
 SELECT
