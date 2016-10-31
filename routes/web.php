@@ -32,3 +32,4 @@ Route::resource('reports', 'ReportsController');
 Route::get('saml2/error', 'Auth\LoginController@error');
 
 Auth::routes();
+Route::post('logout', 'Auth\LoginController@samlLogout');  // override POST route

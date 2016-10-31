@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -32,7 +33,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'logout']);
+        $this->middleware('guest', ['except' => 'samlLogout']);
     }
 
     /**
@@ -45,5 +46,22 @@ class LoginController extends Controller
         return view('auth.error', [
             'errors' => session()->get('saml2_error', []),
         ]);
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function samlLogout(Request $request)
+    {
+        $user = \Auth::user();
+
+        if (!is_null($user->saml_session)) {
+            return \Saml2::logout('/', $user->saml_id, $user->saml_session);
+        }
+
+        return $this->logout($request);
     }
 }
