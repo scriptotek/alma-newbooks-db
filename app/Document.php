@@ -26,12 +26,12 @@ class Document extends Model
      */
     protected $dates = [
         self::RECEIVING_OR_ACTIVATION_DATE,
-        'sent_date',
-        'item_creation_date',
-        'receiving_date',
-        'po_creation_date',
-        'activation_date',
-        'portfolio_creation_date',
+        // 'sent_date',                 // date
+        // 'item_creation_date',        // date
+        'receiving_date',               // datetime
+        'po_creation_date',             // datetime
+        // 'activation_date',           // date
+        //'portfolio_creation_date',    // date
     ];
 
     /**

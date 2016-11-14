@@ -9,6 +9,8 @@ use voku\helper\UTF8;
 
 class AnalyticsReportImporter
 {
+    protected static $keyCache = [];
+
     protected static function cleanRow($row)
     {
         // Publication year: "[2012]" -> "2012", "c2012" -> "2012", etc.
@@ -89,6 +91,15 @@ class AnalyticsReportImporter
         if (!$key) {
             throw new \RuntimeError('No key column found for row: ' . json_encode($row));
         }
+        $key_val = array_values($key)[0];
+        if (in_array($key_val, self::$keyCache)) {
+            // IGNORE DUPLICATE ROW
+            // This happens for items with more than one fund ledger.
+            return;
+        }
+
+        self::$keyCache[] = $key_val;
+
         $doc = Document::firstOrNew($key);
         if (is_null($doc->id) && !$create) {
             return null;

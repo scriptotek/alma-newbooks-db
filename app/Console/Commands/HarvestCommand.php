@@ -99,12 +99,12 @@ class HarvestCommand extends Command
                 'portfolio_creation_date',
                 'library_code',
                 'library_name',
-                'po_creator',
                 Document::PO_ID,
                 'status',
                 'availability',
-                'creator',
+                'po_creator',
                 'is_free',
+                'life_cycle',
                 'material_type',
                 Document::PORTFOLIO_ID,
             ]
@@ -193,19 +193,19 @@ class HarvestCommand extends Command
     {
         $n = 0; $m = 0; $cn = 0; $cm = 0;
         foreach ($report->rows as $row) {
+            $n++;
             $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $create);
             if (is_null($doc)) {
                 continue;
             }
-            $m++;
 
             if (!$doc->exists) {
                 $cn++;
-                $this->comment("NEW  {$doc->receiving_or_activation_date}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
+                $this->comment("NEW  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
 
             } else if ($doc->isDirty()) {
                 $cm++;
-                $this->comment("MOD  {$doc->receiving_or_activation_date}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
+                $this->comment("MOD  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
                 foreach ($doc->getDirty() as $k => $v) {
                     $this->comment(" - '$k' changed from '" . $doc->getOriginal($k) . "' to '$v'", OutputInterface::VERBOSITY_VERBOSE);
                 }
@@ -213,8 +213,8 @@ class HarvestCommand extends Command
 
             $doc->save();
 
-            $n++;
-            if ($n % 1000 == 0) {
+            $m++;
+            if ($m % 1000 == 0) {
                 $this->info('Imported ' . $m . ' of ' . $n . ' rows');
             }
         }

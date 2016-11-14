@@ -42,7 +42,7 @@ class CreateDocumentsTable extends Migration
             $table->text('po_modified_by')->nullable();
             $table->dateTime('po_creation_date')->nullable();
             $table->dateTime('po_modification_date')->nullable();
-            $table->dateTime('sent_date')->nullable();
+            $table->date('sent_date')->nullable();
 
             // Bibliographic data
             $table->text(Document::MMS_ID)->nullable();
@@ -77,7 +77,7 @@ class CreateDocumentsTable extends Migration
             $table->text('barcode')->nullable();
             $table->text('item_creator')->nullable();
             $table->text('process_type')->nullable();
-            $table->dateTime('item_creation_date')->nullable();
+            $table->date('item_creation_date')->nullable();
             $table->dateTime('receiving_date')->nullable();
 
             // Electronic portfolio

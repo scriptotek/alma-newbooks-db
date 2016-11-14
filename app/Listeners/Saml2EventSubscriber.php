@@ -22,10 +22,9 @@ class Saml2EventSubscriber
         $uid = $data->getUserId();
         $attrs = $data->getAttributes();
 
-
-        $user = User::firstOrNew([ 'email' => $attrs['EmailAddress'][0] ]);
-        $user->name = $attrs['FirstName'][0] . ' ' . $attrs['LastName'][0];
-        $user->email = $attrs['EmailAddress'][0];
+        $user = User::firstOrNew([ 'uio_id' => $attrs['uid'][0] ]);
+        $user->name = $attrs['cn'][0];
+        $user->email = $attrs['mail'][0];
 
         $user->saml_id = $uid;
         $user->saml_session = $data->getSessionIndex();
