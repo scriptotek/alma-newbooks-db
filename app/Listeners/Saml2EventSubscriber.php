@@ -7,9 +7,16 @@ use Aacotroneo\Saml2\Events\Saml2LogoutEvent;
 use App\User;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Scriptotek\Alma\Client as AlmaClient;
 
 class Saml2EventSubscriber
 {
+
+    public function __construct(AlmaClient $alma)
+    {
+        $this->alma = $alma;
+    }
+
     /**
      * Handle the event.
      *
@@ -22,9 +29,32 @@ class Saml2EventSubscriber
         $uid = $data->getUserId();
         $attrs = $data->getAttributes();
 
-        $user = User::firstOrNew([ 'uio_id' => $attrs['uid'][0] ]);
-        $user->name = $attrs['cn'][0];
-        $user->email = $attrs['mail'][0];
+        $uio_id = $attrs['uid'][0];
+        $primary_id = $uio_id . '@uio.no';
+
+        $user = User::where('uio_id', '=', $uio_id)->first();
+        if (is_null($user)) {
+
+            try {
+                $alma_user_data = $this->alma->users->get($primary_id);
+            } catch (\Scriptotek\Alma\Exception\ClientException $e) {
+                \Session::flash('error', 'The UiO ID isn\'t registed to any users in Alma.');
+                return;
+            }
+
+            if ($alma_user_data->status->value != 'ACTIVE' || $alma_user_data->user_group->desc != 'Egne ansatte') {
+                \Session::flash('error', 'The Alma user isn\'t active or isn\'t in the employee group.');
+                return;
+            }
+
+            $user = new User();
+            $user->uio_id = $uio_id;
+            $user->name = $attrs['cn'][0];
+            $user->email = $attrs['mail'][0];
+            $user->alma_ids = $alma_user_data->getIds();
+            \Session::flash('status', '🤗 Velkommen til ub-tilvekst! Vi fant deg i Alma med følgende ID-er: ' . implode(', ', $alma_user_data->getIds()));
+        }
+
 
         $user->saml_id = $uid;
         $user->saml_session = $data->getSessionIndex();

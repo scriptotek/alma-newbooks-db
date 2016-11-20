@@ -19,9 +19,10 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('ltid')->nullable()->unique();
             $table->string('password')->nullable();
-            $table->string('alma_id')->nullable()->unique();
+            $table->text('alma_ids');
             $table->string('feide_id')->nullable()->unique();
             $table->string('uio_id')->nullable()->unique();
+            $table->string('barcode')->nullable()->unique();
             $table->string('saml_id')->nullable();
             $table->string('saml_session')->nullable();
             $table->rememberToken();

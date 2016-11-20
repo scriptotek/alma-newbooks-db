@@ -8,7 +8,7 @@
             @foreach($users as $user)
                 <li>
                     <a href="{{ action('UsersController@show', $user->id) }}">{{ $user->name }}</a>
-                ({{ $user->ltid or 'mangler ltid' }})
+                ({{ implode(', ', $user->alma_ids) }})
                 </li>
             @endforeach
         </ul>
