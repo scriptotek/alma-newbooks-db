@@ -15,6 +15,13 @@ if (!ini_get("auto_detect_line_endings")) {
     ini_set("auto_detect_line_endings", '1');
 }
 
+// To get month names in Norwegian
+setlocale(LC_TIME, 'nb_NO');
+
+// To get group writable log files
+umask(0002);
+
+
 $app = new Illuminate\Foundation\Application(
     realpath(__DIR__.'/../')
 );
