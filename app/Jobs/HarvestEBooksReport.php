@@ -39,5 +39,13 @@ class HarvestEBooksReport extends HarvestAnalytics
         Document::PORTFOLIO_ID,
     ];
 
-
+    /**
+     * Create a new job instance.
+     *
+     * @param int $days Number of past days to get records for
+     */
+    public function __construct($days)
+    {
+        $this->filter = sprintf($this->filter, $days);
+    }
 }

@@ -22,26 +22,15 @@ class HarvestAnalytics implements ShouldQueue
     protected $headers;
 
     /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct($days)
-    {
-        $this->filter = sprintf($this->filter, $days);
-    }
-
-    /**
      * @param Report $report
-     * @param string[] $headers
-     * @param boolean $create
      */
-    public function importReport(Report $report, $create)
+    protected function importReport(Report $report)
     {
+        $keyCache = [];
         $n = 0; $m = 0; $cn = 0; $cm = 0;
         foreach ($report->rows as $row) {
             $n++;
-            $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $create);
+            $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $this->createIfNotExists, $keyCache);
             if (is_null($doc)) {
                 continue;
             }
@@ -57,7 +46,7 @@ class HarvestAnalytics implements ShouldQueue
             } else if ($doc->isDirty()) {
                 $cm++;
                 foreach ($doc->getDirty() as $k => $v) {
-                    $change = Change::create([
+                    Change::create([
                         'document_id' => $doc->id,
                         'key' => $k,
                         'old_value' => $doc->getOriginal($k),
@@ -87,11 +76,11 @@ class HarvestAnalytics implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @param AlmaClient $alma
      */
     public function handle(AlmaClient $alma)
     {
         $report = $alma->analytics->get($this->path, $this->headers, $this->filter);
-        $this->importReport($report, $this->createIfNotExists);
+        $this->importReport($report);
     }
 }

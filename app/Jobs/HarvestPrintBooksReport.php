@@ -62,8 +62,16 @@ class HarvestPrintBooksReport extends HarvestAnalytics
         'sent_date',
         'source_type',
         'vendor_code',
-        'temporary_library_name',
-        'temporary_location_name',
         'isbn',
     ];
+
+    /**
+     * Create a new job instance.
+     *
+     * @param int $days Number of past days to get records for
+     */
+    public function __construct($days)
+    {
+        $this->filter = sprintf($this->filter, $days);
+    }
 }

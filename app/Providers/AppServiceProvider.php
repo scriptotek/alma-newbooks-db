@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Jobs\HarvestPrintBooksReport;
+use App\Jobs\HarvestTemporaryLocationReport;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Queue\Events\JobProcessed;
@@ -16,9 +18,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Queue::after(function (JobProcessed $event) {
-            // \Log::info('Job ' . get_class($event->job) . ' processed.');
-            if (is_a($event->job, HarvestPrintBooksReport::class)) {
-                // TODO: dispatch FetchTemporaryLocationDocuments
+            $cmd = array_get($event->job->payload(), 'data.commandName');
+            if ($cmd == HarvestPrintBooksReport::class) {
+                dispatch(new HarvestTemporaryLocationReport());
             }
         });
     }

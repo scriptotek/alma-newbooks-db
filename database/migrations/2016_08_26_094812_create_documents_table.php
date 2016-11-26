@@ -67,7 +67,6 @@ class CreateDocumentsTable extends Migration
             $table->text('library_name')->nullable();
             $table->text('location_name')->nullable();
             $table->text('permanent_call_number')->nullable();
-            $table->text('temporary_library_code')->nullable();
             $table->text('temporary_library_name')->nullable();
             $table->text('temporary_location_name')->nullable();
 
