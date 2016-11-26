@@ -17,8 +17,8 @@ class CreateChangesTable extends Migration
             $table->increments('id');
             $table->integer('document_id')->unsigned();
             $table->text('key');
-            $table->text('old_value');
-            $table->text('new_value');
+            $table->text('old_value')->nullable();
+            $table->text('new_value')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('document_id')->references('id')->on('documents');
