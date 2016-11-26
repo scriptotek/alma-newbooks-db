@@ -21,7 +21,7 @@ class DocumentsRequest extends FormRequest
         'dewey_classification',
         'fund_ledger_code',
         'reporting_code',
-        'receiving_date',
+        'permanent_call_number',
         'receiving_note',
     ];
     protected $relations = [

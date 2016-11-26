@@ -204,6 +204,13 @@ class HarvestCommand extends Command
                 $cm++;
                 $this->comment("MOD  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
                 foreach ($doc->getDirty() as $k => $v) {
+                    $change = Change::create([
+                        'document_id' => $doc->id,
+                        'key' => $k,
+                        'old_value' => $doc->getOriginal($k),
+                        'new_value' => $v,
+                    ]);
+
                     $this->comment(" - '$k' changed from '" . $doc->getOriginal($k) . "' to '$v'", OutputInterface::VERBOSITY_VERBOSE);
                     \Log::info('Updated existing document.', [
                         'id' => $doc->id,

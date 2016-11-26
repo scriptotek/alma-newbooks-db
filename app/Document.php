@@ -122,6 +122,14 @@ class Document extends Model
         'description',
     ];
 
+    /**
+     * Get the related changes.
+     */
+    public function changes()
+    {
+        return $this->hasMany('App\Change');
+    }
+
     public static function getFields()
     {
         $fields = self::$fields;  // In PHP arrays are assigned by copy, not by reference
