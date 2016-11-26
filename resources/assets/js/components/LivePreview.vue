@@ -11,7 +11,7 @@
 
             <div class="panel-body">
                 <div v-for="doc in docs">
-                    <div><a href="/docs/{{ doc.mms_id }}">{{ doc.receiving_or_activation_date.split(' ')[0] }} - {{ doc.title }}</a> <small><em>{{ doc.location_name }} {{ doc.permanent_call_number }}</em></small></div>
+                    <div><a href="/documents/{{ doc.mms_id }}">{{ doc.receiving_or_activation_date.split(' ')[0] }} - {{ doc.title }}</a> <small><em>{{ doc.location_name }} {{ doc.permanent_call_number }}</em></small></div>
                 </div>
             </div>
         </div>
