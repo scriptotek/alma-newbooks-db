@@ -159,4 +159,27 @@ class Document extends Model
     {
         return Document::where('mms_id', '=', $this->{self::MMS_ID})->get();
     }
+
+    public function link_to_date($dateField)
+    {
+        if (!isset($this->{$dateField})) {
+            return '-----';
+        }
+        $val = $this->{$dateField};
+        if (!is_object($val)) {
+            $val = new \Carbon\Carbon($val);
+        }
+        $val2 = $val->copy()->addDay();
+
+        $url = action('DocumentsController@index', [
+            'k1' => $dateField,
+            'r1' => 'gte',
+            'v1' => $val->toDateString(),
+            'k2' => $dateField,
+            'r2' => 'lt',
+            'v2' => $val2->toDateString(),
+        ]);
+
+        return '<a href="' . $url . '">' . $this->{$dateField} . '</a>';
+    }
 }

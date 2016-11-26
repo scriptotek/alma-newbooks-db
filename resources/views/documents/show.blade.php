@@ -60,7 +60,8 @@
 					@if ($component->po_creator)
 						by <a href="{{ action('DocumentsController@index', ['k1' => 'po_creator', 'r1' => 'eq', 'v1' => $component->po_creator]) }}">{{ $component->po_creator }}</a>
 					@endif
-					and sent {{ $component->getDateString('sent_date') }}.
+					and sent
+					{!! $component->link_to_date('sent_date') !!}.
 				@else
 					{{ $component->{App\Document::PO_ID} }}:
 					{{$component->acquisition_method}}.
@@ -68,12 +69,12 @@
 
 				@if ($component->receiving_date)
 					Item received:
-					<a href="{{ action('DocumentsController@index', ['k1' => App\Document::RECEIVING_OR_ACTIVATION_DATE, 'r1' => 'be', 'v1' => $component->getDateString('receiving_date')]) }}">{{ $component->getDateString('receiving_date') }}</a>
+					{!! $component->link_to_date(App\Document::RECEIVING_OR_ACTIVATION_DATE) !!}
 				@endif
 
 				@if ($component->activation_date)
 					E-book activated:
-					<a href="{{ action('DocumentsController@index', ['k1' => App\Document::RECEIVING_OR_ACTIVATION_DATE, 'r1' => 'be', 'v1' => $component->getDateString('activation_date')]) }}">{{ $component->getDateString('activation_date') }}</a>
+					{!! $component->link_to_date(App\Document::RECEIVING_OR_ACTIVATION_DATE) !!}
 				@endif
 				</div>
 				<div>
