@@ -24,6 +24,8 @@ Route::resource('users', 'UsersController', ['only' => [
 ]]);
 
 Route::get('reports/{report}/rss', 'ReportsController@rss');
+Route::get('reports/{report}/month/{month}', 'ReportsController@byMonth');
+Route::get('reports/{report}/week/{week}', 'ReportsController@byWeek');
 Route::get('reports/preview', 'ReportsController@preview');
 Route::get('reports/{report}/delete', 'ReportsController@delete');
 Route::resource('reports', 'ReportsController');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Document;
 use App\Report;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -109,20 +110,88 @@ class ReportsController extends Controller
      */
     public function show(Request $request, Report $report)
     {
-        if ($request->get('group_by') == 'dewey') {
-            $docs = $report->documentsByDewey;
-        } else if ($request->get('group_by') == 'week') {
-            $docs = $report->documentsByWeek;
-        } else {
-            $docs = [null => $report->documents];
-        }
-
+        $docs = $report->documents;
+        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
 
         return view('reports.show', [
             'report' => $report,
             'docs' => $docs,
+            'groups' => $groups,
         ]);
     }
+
+    /**
+     * Display the specified resource for a given month.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Report  $report
+     * @param  string $month
+     * @return \Illuminate\Http\Response
+     */
+    public function byMonth(Request $request, Report $report, $month)
+    {
+        list($year, $month) = explode('-', $month);
+        $year = intval($year);
+        $month = intval($month);
+
+        $currentMonth = Carbon::create($year, $month, 1);
+
+        $docs = $report->getDocumentsFromMonth($year, $month);
+        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
+
+        $prevMonth = $currentMonth->copy()->subMonth();
+        $prevUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $prevMonth->format('Y-m')]);
+        $prevLink = "<a href=\"$prevUrl\">« " . $prevMonth->formatLocalized('%B %Y') . "</a>";
+
+        $nextMonth = $currentMonth->copy()->addMonth();
+        $nextUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $nextMonth->format('Y-m')]);
+        $nextLink = "<a href=\"$nextUrl\">" . $nextMonth->formatLocalized('%B %Y') . " »</a>";
+
+        return view('reports.filtered', [
+            'report' => $report,
+            'docs' => $docs,
+            'groups' => $groups,
+            'header' => $currentMonth->formatLocalized('%B %Y'),
+            'prevLink' => $prevLink,
+            'nextLink' => $nextLink,
+        ]);
+    }
+
+    /**
+     * Display the specified resource for a given week.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Report  $report
+     * @param  string $week
+     * @return \Illuminate\Http\Response
+     */
+    public function byWeek(Request $request, Report $report, $week)
+    {
+        list($year, $week) = explode('-', $week);
+        $year = intval($year);
+        $week = intval($week);
+
+        $currentWeek = new Carbon("{$year}W{$week}");
+
+        $docs = $report->getDocumentsFromweek($year, $week);
+        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
+
+        $prevWeek = $currentWeek->copy()->subWeek();
+        $prevUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $prevWeek->format('Y-W')]);
+        $prevLink = "<a href=\"$prevUrl\">« " . $prevWeek->formatLocalized('Uke %W') . "</a>";
+
+        $nextWeek = $currentWeek->copy()->addWeek();
+        $nextUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $nextWeek->format('Y-W')]);
+        $nextLink = "<a href=\"$nextUrl\">" . $nextWeek->formatLocalized('Uke %W') . " »</a>";
+
+        return view('reports.filtered', [
+            'report' => $report,
+            'docs' => $docs,
+            'groups' => $groups,
+            'header' => $currentWeek->formatLocalized('Uke %W'),
+            'prevLink' => $prevLink,
+            'nextLink' => $nextLink,
+        ]);    }
 
     /**
      * Display the specified resource as rss.

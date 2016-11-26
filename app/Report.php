@@ -42,50 +42,125 @@ class Report extends Model
         $startDate = Carbon::now()->subDays($this->days_start); // e.g. 30
         $endDate = Carbon::now()->subDays($this->days_end);     // e.g. 2
 
+        return $this->getDocuments($startDate, $endDate);
+    }
+
+    public function getDocumentsFromMonth($year, $month)
+    {
+        $startDate = Carbon::create($year, $month, 1);
+        $endDate = $startDate->copy()->addMonth();
+
+        return $this->getDocuments($startDate, $endDate);
+    }
+
+    public function getDocumentsFromWeek($year, $week)
+    {
+        $startDate = new Carbon("{$year}W{$week}");
+        $endDate = $startDate->copy()->addWeek();
+
+        return $this->getDocuments($startDate, $endDate);
+    }
+
+    public function getDocuments($startDate, $endDate)
+    {
         return Document::query()
-            ->whereRaw($this->querystring)
-            ->where(Document::RECEIVING_OR_ACTIVATION_DATE, '>', $startDate->toDateString())
+            ->where(function($query) {
+                return $query->whereRaw($this->querystring);
+            })
+            ->where(Document::RECEIVING_OR_ACTIVATION_DATE, '>=', $startDate->toDateString())
             ->where(Document::RECEIVING_OR_ACTIVATION_DATE, '<', $endDate->toDateString())
             ->orderBy(Document::RECEIVING_OR_ACTIVATION_DATE, 'desc')
             ->get();
     }
 
-    public function getDocumentsByWeekAttribute()
+    public function groupDocuments($docs, $groupBy)
     {
-        $docs = $this->documents;
+        if ($groupBy == 'dewey') {
+            $docs = $this->groupByDewey($docs);
+        } else if ($groupBy == 'week') {
+            $docs = $this->groupByWeek($docs);
+        } else if ($groupBy == 'month') {
+            $docs = $this->groupByMonth($docs);
+        } else {
+            $docs = ['docs' => [null => $docs], 'groups' => []];
+        }
 
-        $out = [];
+        return [$docs['docs'], $docs['groups']];
+    }
+
+    public function groupByWeek($docs)
+    {
+        $out = [
+            'groups' => [],
+            'docs' => [],
+        ];
 
         foreach ($docs as $doc) {
-            $weekno = 'Uke ' . $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->format('W');
-            $out[$weekno][] = $doc;
+            $year = $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->format('Y');
+            $week = $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->format('W');
+
+            $url = action('ReportsController@byWeek', ['report' => $this->id, 'week' => $year . '-' . $week]);
+            $title = 'Uke ' . $week;
+
+            $out['docs'][$title][] = $doc;
+            $out['groups'][$title] = $url;
         }
 
         return $out;
     }
 
-    public function getDocumentsByDeweyAttribute()
+    public function groupByMonth($docs)
     {
-        $docs = $this->documents;
+        $out = [
+            'groups' => [],
+            'docs' => [],
+        ];
 
-        $out = [];
+        foreach ($docs as $doc) {
+            $dt = $doc->{Document::RECEIVING_OR_ACTIVATION_DATE};
+            $year = $dt->format('Y');
+            $month = $dt->format('m');
+
+            $url = action('ReportsController@byMonth', ['report' => $this->id, 'month' => $year . '-' . $month]);
+            $title = $dt->formatLocalized('%B');
+
+            $out['docs'][$title][] = $doc;
+            $out['groups'][$title] = $url;
+        }
+
+        return $out;
+    }
+
+    public function groupByDewey($docs)
+    {
+        $out = [
+            'groups' => [],
+            'docs' => [],
+        ];
 
         foreach ($docs as $doc) {
             if (!$doc->dewey_classification) {
-                $ddc = '1000 Not yet assigned';
+                $title = '1000 Not yet assigned';
                 // continue
             } else {
-                $ddc = substr($doc->dewey_classification, 0, 2) . '0';
+                $title = substr($doc->dewey_classification, 0, 2) . '0';
             }
-            $out[$ddc][] = $doc;
+            $out['docs'][$title][] = $doc;
         }
 
-        ksort($out);
+        ksort($out['docs']);
 
         // sort trick
-        $out['(Not yet assigned)'] = $out['1000 Not yet assigned'];
-        unset($out['1000 Not yet assigned']);
+        if (isset($out['docs']['1000 Not yet assigned'])) {
+            $out['docs']['(Not yet assigned)'] = $out['docs']['1000 Not yet assigned'];
+            unset($out['docs']['1000 Not yet assigned']);
+        }
 
         return $out;
+    }
+
+    public function getLinkAttribute()
+    {
+        return action('ReportsController@show', ['id' => $this->id]);
     }
 }

@@ -32,11 +32,18 @@
             <h2>{{ $report->name }}</h2>
             <a href="?group_by=dewey">Gruppér etter Dewey</a> |
             <a href="?group_by=week">Gruppér etter ukenummer</a> |
+            <a href="?group_by=month">Gruppér etter måned</a> |
             <a href="?">Ingen gruppering</a>
 
             @foreach ($docs as $k => $v)
             @if (!is_null($k))
-            <h3>{{$k}}</h3>
+                <h3>
+                @if (isset($groups[$k]))
+                <a href="{{ array_get($groups, $k) }}">{{$k}}</a>
+                @else
+                {{$k}}
+                @endif
+                </h3>
             @endif
             <ul>
                 @foreach ($v as $doc)
