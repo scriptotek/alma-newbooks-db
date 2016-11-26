@@ -18,7 +18,7 @@
         "barryvdh/laravel-debugbar": "^2.2",
         "scriptotek/alma-client": "^0.4.1",
         "aacotroneo/laravel-saml2": "^0.8.0",
-        "rap2hpoutre/laravel-log-viewer": "^0.7.0"
+        "arcanedev/log-viewer": "~4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

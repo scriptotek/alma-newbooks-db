@@ -36,6 +36,3 @@ Route::get('saml2/error', 'Auth\LoginController@error');
 Auth::routes();
 Route::post('logout', 'Auth\LoginController@samlLogout');  // override POST route
 
-Route::group(['middleware' => 'auth'], function () {
-	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-});

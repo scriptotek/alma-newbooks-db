@@ -77,7 +77,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'nb',
 
     /*
     |--------------------------------------------------------------------------
@@ -120,7 +120,7 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => 'daily',
     'log_level' => env('APP_LOG_LEVEL', 'debug'),
     'log_max_files' => 30,
 
@@ -171,7 +171,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Scriptotek\Alma\Providers\AlmaServiceProvider::class,
         Aacotroneo\Saml2\Saml2ServiceProvider::class,
-        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
         /*
          * Application Service Providers...
