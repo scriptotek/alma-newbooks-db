@@ -88,6 +88,7 @@ class CreateDocumentsTable extends Migration
             // Enrichments
             $table->text('cover_image')->nullable();
             $table->text('description')->nullable();
+            $table->date('cataloged_at')->nullable();
 
             // Indices
             $table->index(Document::RECEIVING_OR_ACTIVATION_DATE);

@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Change;
+use App\Document;
 use App\Importers\AnalyticsReportImporter;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
@@ -20,6 +22,22 @@ class HarvestAnalytics implements ShouldQueue
     protected $path;
     protected $filter;
     protected $headers;
+
+    protected function handleChange(Document $doc, $key, $old_value, $new_value)
+    {
+        Change::create([
+            'document_id' => $doc->id,
+            'key'         => $key,
+            'old_value'   => $old_value,
+            'new_value'   => $new_value,
+        ]);
+
+        if ($key == 'permanent_call_number' && is_null($old_value)) {
+            // Permanent call number was assigned yesterday.
+            // We use this as a measure of the cataloging date.
+            $doc->cataloged_at = Carbon::now()->subDay();
+        }
+    }
 
     /**
      * @param Report $report
@@ -46,12 +64,7 @@ class HarvestAnalytics implements ShouldQueue
             } else if ($doc->isDirty()) {
                 $cm++;
                 foreach ($doc->getDirty() as $k => $v) {
-                    Change::create([
-                        'document_id' => $doc->id,
-                        'key' => $k,
-                        'old_value' => $doc->getOriginal($k),
-                        'new_value' => $v,
-                    ]);
+                    $this->handleChange($doc, $k, $doc->getOriginal($k), $v);
 
                     \Log::debug('Updated existing document.', [
                         'id' => $doc->id,
