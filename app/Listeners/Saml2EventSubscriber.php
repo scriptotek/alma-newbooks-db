@@ -38,14 +38,18 @@ class Saml2EventSubscriber
             try {
                 $alma_user_data = $this->alma->users->get($primary_id);
             } catch (\Scriptotek\Alma\Exception\ClientException $e) {
+                \Log::notice('Access denied for SAML user not found in Alma.', ['email' => $primary_id]);
                 \Session::flash('error', 'The UiO ID isn\'t registed to any users in Alma.');
                 return;
             }
 
             if ($alma_user_data->status->value != 'ACTIVE' || $alma_user_data->user_group->desc != 'Egne ansatte') {
+                \Log::notice('Access denied for SAML user not in the "Egne ansatte" group in Alma.', ['email' => $primary_id]);
                 \Session::flash('error', 'The Alma user isn\'t active or isn\'t in the employee group.');
                 return;
             }
+
+            \Log::notice('Registered new SAML user.', ['email' => $primary_id]);
 
             $user = new User();
             $user->uio_id = $uio_id;
@@ -54,7 +58,6 @@ class Saml2EventSubscriber
             $user->alma_ids = $alma_user_data->getIds();
             \Session::flash('status', '🤗 Velkommen til ub-tilvekst! Vi fant deg i Alma med følgende ID-er: ' . implode(', ', $alma_user_data->getIds()));
         }
-
 
         $user->saml_id = $uid;
         $user->saml_session = $data->getSessionIndex();
