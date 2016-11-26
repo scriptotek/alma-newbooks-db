@@ -47,12 +47,9 @@ class HarvestCommand extends Command
                 'item_creator',
                 Document::ITEM_ID,
                 'item_policy',
-                'last_loan_date',
                 'material_type',
                 'process_type',
-                'receiving_date_only',  // TODO: Delete from report
                 'receiving_date',
-                'temporary_physical_location',
                 'acquisition_method',
                 'additional_order_reference',
                 'cancellation_reason',
@@ -69,6 +66,8 @@ class HarvestCommand extends Command
                 'sent_date',
                 'source_type',
                 'vendor_code',
+                'temporary_library_name',
+                'temporary_location_name',
                 'isbn',
             ],
         ],
@@ -84,7 +83,6 @@ class HarvestCommand extends Command
             'headers' => [
                 'author',
                 'bibliographic_level',
-                'dewey_classification',
                 'edition',
                 'isbn',
                 Document::MMS_ID,
@@ -92,19 +90,13 @@ class HarvestCommand extends Command
                 'publisher',
                 'series',
                 'title',
-                'dewey_number',
-                'public_name',
-                'institution_name',
+                'dewey_classification',
+                'collection_name',
                 'activation_date',
                 'portfolio_creation_date',
-                'library_code',
                 'library_name',
                 Document::PO_ID,
-                'status',
-                'availability',
                 'po_creator',
-                'is_free',
-                'life_cycle',
                 'material_type',
                 Document::PORTFOLIO_ID,
             ]
@@ -201,13 +193,24 @@ class HarvestCommand extends Command
 
             if (!$doc->exists) {
                 $cn++;
-                $this->comment("NEW  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
+                \Log::info('New document.', [
+                    'date' => $doc->receiving_or_activation_date,
+                    'po_line' => $doc->po_line,
+                    'barcode' => $doc->barcode,
+                ]);
+                $this->comment("New document found.',  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
 
             } else if ($doc->isDirty()) {
                 $cm++;
                 $this->comment("MOD  {$doc->receiving_or_activation_date}  {$doc->po_line}  {$doc->barcode}  " . substr($doc->title, 0, 30), OutputInterface::VERBOSITY_VERBOSE);
                 foreach ($doc->getDirty() as $k => $v) {
                     $this->comment(" - '$k' changed from '" . $doc->getOriginal($k) . "' to '$v'", OutputInterface::VERBOSITY_VERBOSE);
+                    \Log::info('Updated existing document.', [
+                        'id' => $doc->id,
+                        'attribute' => $k,
+                        'old_value' => $doc->getOriginal($k),
+                        'new_value' => $v
+                    ]);
                 }
             }
 
@@ -219,6 +222,12 @@ class HarvestCommand extends Command
             }
         }
         $this->info("Imported {$m} of {$n} rows. {$cn} new documents, {$cm} modified.");
+        \Log::info('Harvest completed.', [
+            'docs_checked' => $n,
+            'new' => $cn,
+            'modified' => $cm,
+        ]);
+
     }
 
     /**
@@ -239,6 +248,7 @@ class HarvestCommand extends Command
     public function handle()
     {
         $days = $this->argument('days');
+        \Log::info("Starting harvest: Fetching last {$days} days of records");
 
         $n = 0;
         foreach ($this->reports as $report) {
@@ -254,5 +264,6 @@ class HarvestCommand extends Command
         }
 
         $this->info('DONE');
+        \Log::info("Harvest complete");
     }
 }
