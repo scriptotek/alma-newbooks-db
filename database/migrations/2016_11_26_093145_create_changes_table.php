@@ -19,7 +19,7 @@ class CreateChangesTable extends Migration
             $table->text('key');
             $table->text('old_value');
             $table->text('new_value');
-            $table->dateTime('created_at')->useCurrent();
+            $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('document_id')->references('id')->on('documents');
         });
