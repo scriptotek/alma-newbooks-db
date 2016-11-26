@@ -190,7 +190,34 @@ ORDER BY 1, 12 DESC NULLS LAST, 6 ASC NULLS FIRST, 11 ASC NULLS FIRST, 10 ASC NU
 FETCH FIRST 500001 ROWS ONLY
 ```
 
-## Lessons learned
+## Queue driver
+
+By default harvest jobs are carried out synchronously (`QUEUE_DRIVER=sync` in `.env`).
+If you're in the mood for something else,
+you can set `QUEUE_DRIVER=database` and fire up a background worker process that
+processes the queue. The main benefit is that failed jobs are retried
+automatically. The main drawback is that you must ensure the worker process keeps
+running, so you need to configure something like supervisor. See the
+[Laravel docs](https://laravel.com/docs/5.3/queues). Here's an example
+`ub-tilvekst-worker.ini` file:
+
+```
+[program:ub-tilvekst-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/almanewbooks/artisan queue:work database --sleep=3 --tries=3
+autostart=true
+autorestart=true
+user=apache
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/path/to/almanewbooks/storage/logs/worker.log
+```
+
+After code changes:
+
+    sudo supervisorctl restart ub-tilvekst-worker:*
+
+## Some lessons learned
 
 * Bibliographic data from the Analytics API cannot always be presented as-is.
   For instance,
