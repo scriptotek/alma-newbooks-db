@@ -32,8 +32,10 @@ class DocumentsRequest extends FormRequest
         'ne' => 'not equals',
         'nu' => 'is null',
         'nn' => 'is not null',
-        'gr' => 'is greater than',
-        'le' => 'is less than',
+        'gt' => 'is greater than',
+        'gte' => 'is greater than or equal',
+        'lt' => 'is less than',
+        'lte' => 'is less than or equal',
     ];
 
     /**
@@ -82,13 +84,13 @@ class DocumentsRequest extends FormRequest
             if ($val) {
                 switch ($rel) {
                     case 'be':
-                        $builder->where($key, 'LIKE', $val . '%');
+                        $builder->where($key, 'ILIKE', $val . '%');
                         break;
                     case 'co':
-                        $builder->where($key, 'LIKE', '%' . $val . '%');
+                        $builder->where($key, 'ILIKE', '%' . $val . '%');
                         break;
                     case 'nc':
-                        $builder->where($key, 'NOT LIKE', '%' . $val . '%');
+                        $builder->where($key, 'NOT ILIKE', '%' . $val . '%');
                         break;
                     case 'eq':
                         $builder->where($key, '=', $val);
@@ -96,11 +98,17 @@ class DocumentsRequest extends FormRequest
                     case 'ne':
                         $builder->where($key, '!=', $val);
                         break;
-                    case 'gr':
+                    case 'gt':
                         $builder->where($key, '>', $val);
                         break;
-                    case 'le':
+                    case 'lt':
                         $builder->where($key, '<', $val);
+                        break;
+                    case 'gte':
+                        $builder->where($key, '>=', $val);
+                        break;
+                    case 'lte':
+                        $builder->where($key, '<=', $val);
                         break;
                 }
             } else {
