@@ -48,7 +48,7 @@
             <div class="collapse navbar-collapse" id="app-navbar-collapse">
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
-                    <li class="{{ Ekko::isActiveRoute('docs.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
+                    <li class="{{ Ekko::isActiveRoute('documents.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
                     <li class="{{ Ekko::isActiveRoute('reports.*') }}"><a href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a></li>                    &nbsp;
                     <li class="{{ Ekko::isActiveRoute('users.*') }}"><a href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a></li>                    &nbsp;
                 </ul>
