@@ -37,7 +37,7 @@ class HarvestAnalytics implements ShouldQueue
 
             if (!$doc->exists) {
                 $cn++;
-                \Log::info('New document.', [
+                \Log::debug('New document.', [
                     'date' => $doc->receiving_or_activation_date,
                     'po_line' => $doc->po_line,
                     'barcode' => $doc->barcode,
@@ -53,7 +53,7 @@ class HarvestAnalytics implements ShouldQueue
                         'new_value' => $v,
                     ]);
 
-                    \Log::info('Updated existing document.', [
+                    \Log::debug('Updated existing document.', [
                         'id' => $doc->id,
                         'attribute' => $k,
                         'old_value' => $doc->getOriginal($k),
