@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'lifetime' => 120,
+    'lifetime' => 600,
 
     'expire_on_close' => false,
 
@@ -161,7 +161,7 @@ return [
     |
     */
 
-    'secure' => false,
+    'secure' => env('SESSION_SECURE', false),
 
     /*
     |--------------------------------------------------------------------------
