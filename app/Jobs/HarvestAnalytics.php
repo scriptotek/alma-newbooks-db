@@ -23,8 +23,19 @@ class HarvestAnalytics implements ShouldQueue
     protected $filter;
     protected $headers;
 
+    /**
+     * List of changes we're not interested in tracking.
+     */
+    protected $ignoredChanges = [
+        'dewey_classification_top_line',
+    ];
+
     protected function handleChange(Document $doc, $key, $old_value, $new_value)
     {
+        if (in_array($key, $this->ignoredChanges)) {
+            return;
+        }
+
         Change::create([
             'document_id' => $doc->id,
             'key'         => $key,

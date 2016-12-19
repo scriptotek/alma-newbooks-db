@@ -22,10 +22,13 @@
 				<strong>Series</strong>: {{ $doc->series }}
 			@endif
 			{{ $doc->author }}<br>
-				{{ $doc->publication_place }} : {{ $doc->publisher }} {{ $doc->publication_date }}
+				{{ $doc->publication_place or '(publication place missing)' }}
+				 :
+				{{ $doc->publisher or '(publisher missing)' }}
+				{{ $doc->publication_date or '(publication date missing)' }}
 				<br>
 			<strong>Material type</strong>: {{$doc->material_type}}
-			<strong>Dewey</strong>: {{$doc->dewey_classification}}
+			<strong>Dewey</strong>: {{$doc->dewey_classification or '(not yet assigned)'}}
 
 		</p>
 
@@ -82,6 +85,24 @@
 				</div>
 			</li>
 		@endforeach
+		</ul>
+
+		<h3>History</h3>
+		<ul>
+			@foreach ($doc->changes as $change)
+				<li>
+					{{ $change->created_at->subDay()->toDateString() }}:
+					<span style="color:#888; font-weight: 600;">{{ $change->key }}</span>
+					changed from
+					<span style="color: rgb(199,0,35);  font-weight: 600;">
+						{{ $change->old_value ?: '(no value)' }}
+					</span>
+					to
+					<span style="color: rgb(91,132,150); font-weight: 600;">
+						{{ $change->new_value }}
+					</span>
+				</li>
+			@endforeach
 		</ul>
 
 		<h3>Details</h3>
