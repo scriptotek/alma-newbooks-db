@@ -17,6 +17,7 @@ class CreateDocumentsTable extends Migration
         Schema::create('documents', function (Blueprint $table) {
 
             $table->increments('id');
+            $table->timestamps();
 
             // Sort date made up from 'receiving date' for print or 'activation date' for electronic
             $table->dateTime(Document::RECEIVING_OR_ACTIVATION_DATE)->nullable();
