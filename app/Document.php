@@ -12,6 +12,8 @@ class Document extends Model
     const ITEM_ID = 'item_id';
     const PORTFOLIO_ID = 'portfolio_id';
 
+    const PO_CREATOR = 'po_creator';
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -50,7 +52,7 @@ class Document extends Model
 
         // PO Line
         self::PO_ID,
-        'po_creator',
+        // 'po_creator',  // Hide because of privacy issues
         'acquisition_method',
         'reporting_code',
         'receiving_note',
@@ -125,9 +127,12 @@ class Document extends Model
         return $this->hasMany('App\Change');
     }
 
-    public static function getFields()
+    public static function getFields($includeSensitive=false)
     {
         $fields = self::$fields;  // In PHP arrays are assigned by copy, not by reference
+        if ($includeSensitive) {
+            $fields[] = self::PO_CREATOR;
+        }
         sort($fields);
         return $fields;
     }

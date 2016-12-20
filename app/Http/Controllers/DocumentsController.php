@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Document;
 use App\Http\Requests\DocumentsRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class DocumentsController extends Controller
 {

@@ -61,7 +61,7 @@
 				@if ($component->acquisition_method == 'PURCHASE')
 					Order {{ $component->{App\Document::PO_ID} }} created {{ $component->getDateString('po_creation_date') }}
 					@if ($component->po_creator)
-						by <a href="{{ action('DocumentsController@index', ['k1' => 'po_creator', 'r1' => 'eq', 'v1' => $component->po_creator]) }}">{{ $component->po_creator }}</a>
+						by {{ $component->po_creator }}
 					@endif
 					and sent
 					{!! $component->link_to_date('sent_date') !!}.
@@ -80,9 +80,11 @@
 					{!! $component->link_to_date(App\Document::RECEIVING_OR_ACTIVATION_DATE) !!}
 				@endif
 				</div>
+				@if ($component->process_type)
 				<div>
 					Process type: {{ $component->process_type }}
 				</div>
+				@endif
 			</li>
 		@endforeach
 		</ul>

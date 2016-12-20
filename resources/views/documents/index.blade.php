@@ -3,6 +3,18 @@
 @section('content')
 
     <div class="container">
+
+    @if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+
     <form class="form-horizontal panel panel-default"  method="GET" action="{{ action('DocumentsController@index') }}">
 
         <div class="panel-body">

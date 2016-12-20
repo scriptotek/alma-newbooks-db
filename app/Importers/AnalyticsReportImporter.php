@@ -101,8 +101,8 @@ class AnalyticsReportImporter
             return null;
         }
         foreach ($row as $k => $v) {
-            if (!in_array($k, Document::getFields())) {
                 \Log::warning('[AnalyticsReportImporter] Ignoring unknown field: ' . $k);
+            if (!in_array($k, Document::getFields(true))) {
             } else {
                 $doc->{$k} = $v;
             }

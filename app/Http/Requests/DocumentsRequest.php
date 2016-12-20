@@ -7,6 +7,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class DocumentsRequest extends FormRequest
 {
+
+    /**
+     * The controller action to redirect to if validation fails.
+     *
+     * @var string
+     */
+    protected $redirectAction = 'DocumentsController@index';
+
     protected $maxStatements = 10;
     public $defaultSortField = Document::RECEIVING_OR_ACTIVATION_DATE;
     public $defaultSortDirection = 'desc';
@@ -55,9 +63,18 @@ class DocumentsRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        return [];
+    }
+
+    protected function withValidator($validator)
+    {
+        $validator->after(function($validator) {
+            foreach ($this->getStatements() as $idx => $stmt) {
+                if (!in_array($stmt['key'], Document::getFields())) {
+                    $validator->errors()->add("k$idx", 'Unknown field requested');
+                }
+            }
+        });
     }
 
     public function getRelations()
@@ -72,56 +89,65 @@ class DocumentsRequest extends FormRequest
         return $this->get('show') ?: $this->defaultFields;
     }
 
-    protected function addStatement($builder, $i)
+    protected function addStatement($builder, $key, $rel, $val)
     {
-        if ($this->has("k$i") && $this->has("r$i")) {
-
-            // TODO: check if key in Document::$fields
-            $key = $this->get("k$i");
-            $rel = $this->get("r$i");
-            $val = $this->get("v$i");
-
-            if ($val) {
-                switch ($rel) {
-                    case 'be':
-                        $builder->where($key, 'ILIKE', $val . '%');
-                        break;
-                    case 'co':
-                        $builder->where($key, 'ILIKE', '%' . $val . '%');
-                        break;
-                    case 'nc':
-                        $builder->where($key, 'NOT ILIKE', '%' . $val . '%');
-                        break;
-                    case 'eq':
-                        $builder->where($key, '=', $val);
-                        break;
-                    case 'ne':
-                        $builder->where($key, '!=', $val);
-                        break;
-                    case 'gt':
-                        $builder->where($key, '>', $val);
-                        break;
-                    case 'lt':
-                        $builder->where($key, '<', $val);
-                        break;
-                    case 'gte':
-                        $builder->where($key, '>=', $val);
-                        break;
-                    case 'lte':
-                        $builder->where($key, '<=', $val);
-                        break;
-                }
-            } else {
-                switch ($rel) {
-                    case 'nu':
-                        $builder->whereNull($key);
-                        break;
-                    case 'nn':
-                        $builder->whereNotNull($key);
-                        break;
-                }
+        if ($val) {
+            switch ($rel) {
+                case 'be':
+                    $builder->where($key, 'ILIKE', $val . '%');
+                    break;
+                case 'co':
+                    $builder->where($key, 'ILIKE', '%' . $val . '%');
+                    break;
+                case 'nc':
+                    $builder->where($key, 'NOT ILIKE', '%' . $val . '%');
+                    break;
+                case 'eq':
+                    $builder->where($key, '=', $val);
+                    break;
+                case 'ne':
+                    $builder->where($key, '!=', $val);
+                    break;
+                case 'gt':
+                    $builder->where($key, '>', $val);
+                    break;
+                case 'lt':
+                    $builder->where($key, '<', $val);
+                    break;
+                case 'gte':
+                    $builder->where($key, '>=', $val);
+                    break;
+                case 'lte':
+                    $builder->where($key, '<=', $val);
+                    break;
+            }
+        } else {
+            switch ($rel) {
+                case 'nu':
+                    $builder->whereNull($key);
+                    break;
+                case 'nn':
+                    $builder->whereNotNull($key);
+                    break;
             }
         }
+    }
+
+    public function getStatements()
+    {
+        $statements = [];
+
+        foreach (range(1, $this->maxStatements) as $i) {
+            if ($this->has("k$i") && $this->has("r$i")) {
+                $statements[$i] = [
+                    'key' => $this->get("k$i"),
+                    'rel' => $this->get("r$i"),
+                    'val' => $this->get("v$i"),
+                ];
+            }
+        }
+
+        return $statements;
     }
 
     /**
@@ -135,8 +161,8 @@ class DocumentsRequest extends FormRequest
         $sortDir = $this->get('sortDir', $this->defaultSortDirection);
         $builder->orderBy($sortField, $sortDir);
 
-        foreach (range(1, $this->maxStatements) as $i) {
-            $this->addStatement($builder, $i);
+        foreach ($this->getStatements() as $stmt) {
+            $this->addStatement($builder, $stmt['key'], $stmt['rel'], $stmt['val']);
         }
 
         return $builder;

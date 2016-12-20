@@ -33,6 +33,7 @@
         methods: {
             preview() {
                 var params = {
+                    name: 'random-title' + Math.random(),
                     querystring: $('#' + this.editor).val(),
                     start: $('#' + this.start).val(),
                     end: $('#' + this.end).val(),

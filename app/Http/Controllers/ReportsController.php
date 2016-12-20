@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Document;
+use App\Http\Requests\CreateReportRequest;
 use App\Report;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -34,10 +35,10 @@ class ReportsController extends Controller
     /**
      * Display a listing of the resource based on a raw query.
      *
-     * @param Request $request
+     * @param CreateReportRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function preview(Request $request)
+    public function preview(CreateReportRequest $request)
     {
         $report = new Report();
         $report->days_start = $request->get('start');
@@ -76,18 +77,11 @@ class ReportsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CreateReportRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateReportRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|unique:reports|max:255',
-            'querystring' => 'required',
-            'days_start' => 'required|numeric',
-            'days_end' => 'required|numeric',
-        ]);
-
         $report = Report::create([
             'name' => $request->get('name'),
             'querystring' => $request->get('querystring'),
@@ -242,11 +236,11 @@ class ReportsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CreateReportRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateReportRequest $request, $id)
     {
         $this->validate($request, [
             'name' => 'required|unique:reports,name,' . $id . '|max:255',
