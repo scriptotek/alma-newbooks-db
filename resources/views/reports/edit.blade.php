@@ -31,18 +31,6 @@
                         <input type="text" name="name" id="name" value="{{ old('name') ?: $report->name }}" class="form-control">
                     </div>
                 </div>
-                <div class="col col-sm-3">
-                    <div class="form-group">
-                        <label for="days_start">{{ trans('reports.days_start') }}</label>
-                        <input type="number" name="days_start" id="days_start" value="{{ old('days_start') ?: $report->days_start ?: 30 }}" class="form-control">
-                    </div>
-                </div>
-                <div class="col col-sm-3">
-                    <div class="form-group">
-                        <label for="days_end">{{ trans('reports.days_end') }}</label>
-                        <input type="number" name="days_end" id="days_end" value="{{ old('days_end') ?: $report->days_end ?: 2 }}" class="form-control">
-                    </div>
-                </div>
             </div>
 
             <div class="alert alert-warning">
@@ -64,7 +52,7 @@
                 <button type="submit" class="btn btn-primary">{{ trans('save') }}</button>
             </div>
 
-            <live-preview editor="querystring" start="days_start" end="days_end"></live-preview>
+            <live-preview editor="querystring"></live-preview>
 
         </form>
     </div>

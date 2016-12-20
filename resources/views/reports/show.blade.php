@@ -17,8 +17,7 @@
                 </p>
 
                 <p>
-                    Includes items received or activated between <strong>{{ $report->days_start }}</strong>
-                    and <strong>{{ $report->days_end }}</strong> days ago, and matching the following query:
+                    Includes items matching the following query:
                 </p>
                 <p>
                     <code>{{ $report->querystring }}</code>

@@ -17,8 +17,6 @@ class CreateReportsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('querystring');
-            $table->integer('days_start');
-            $table->integer('days_end');
             $table->integer('created_by')->unsigned();
             $table->integer('updated_by')->unsigned();
             $table->timestamps();

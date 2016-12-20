@@ -14,7 +14,7 @@ class Report extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'querystring', 'created_by', 'updated_by', 'days_start', 'days_end',
+        'name', 'querystring', 'created_by', 'updated_by',
     ];
 
     protected $casts = [
@@ -39,10 +39,10 @@ class Report extends Model
 
     public function getDocumentsAttribute()
     {
-        $startDate = Carbon::now()->subDays($this->days_start); // e.g. 30
-        $endDate = Carbon::now()->subDays($this->days_end);     // e.g. 2
+        // $startDate = isset($this->days_start) ? Carbon::now()->subDays($this->days_start) : null; // e.g. 30
+        // $endDate = isset($this->end_date) ? Carbon::now()->subDays($this->days_end) : null;     // e.g. 2
 
-        return $this->getDocuments($startDate, $endDate);
+        return $this->getDocuments();
     }
 
     public function getDocumentsFromMonth($year, $month)
@@ -61,16 +61,20 @@ class Report extends Model
         return $this->getDocuments($startDate, $endDate);
     }
 
-    public function getDocuments($startDate, $endDate)
+    public function getDocuments($startDate=null, $endDate=null)
     {
-        return Document::query()
+        $query = Document::query()
             ->where(function($query) {
                 return $query->whereRaw($this->querystring);
-            })
-            ->where(Document::RECEIVING_OR_ACTIVATION_DATE, '>=', $startDate->toDateString())
-            ->where(Document::RECEIVING_OR_ACTIVATION_DATE, '<', $endDate->toDateString())
-            ->orderBy(Document::RECEIVING_OR_ACTIVATION_DATE, 'desc')
-            ->get();
+            });
+        if (!is_null($startDate)) {
+            $query = $query->where(Document::RECEIVING_OR_ACTIVATION_DATE, '>=', $startDate->toDateString());
+        }
+        if (!is_null($endDate)) {
+            $query = $query->where(Document::RECEIVING_OR_ACTIVATION_DATE, '<', $endDate->toDateString());
+        }
+
+        return $query->orderBy(Document::RECEIVING_OR_ACTIVATION_DATE, 'desc')->get();
     }
 
     public function groupDocuments($docs, $groupBy)

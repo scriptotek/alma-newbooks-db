@@ -22,7 +22,7 @@
 <script>
     var $ = require ('jquery');
     export default {
-        props: ['editor', 'start', 'end'],
+        props: ['editor'],
         data: function() {
             return {
                 error: '',
@@ -35,8 +35,6 @@
                 var params = {
                     name: 'random-title' + Math.random(),
                     querystring: $('#' + this.editor).val(),
-                    start: $('#' + this.start).val(),
-                    end: $('#' + this.end).val(),
                 };
                 console.log(params);
                 if (params.querystring.trim() == '') {

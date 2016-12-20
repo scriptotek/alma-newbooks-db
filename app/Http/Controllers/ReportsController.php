@@ -41,8 +41,6 @@ class ReportsController extends Controller
     public function preview(CreateReportRequest $request)
     {
         $report = new Report();
-        $report->days_start = $request->get('start');
-        $report->days_end = $request->get('end');
         $report->querystring = $request->get('querystring');
 
         if (empty($report->querystring)) {
@@ -87,8 +85,6 @@ class ReportsController extends Controller
             'querystring' => $request->get('querystring'),
             'created_by' => Auth::user()->id,
             'updated_by' => Auth::user()->id,
-            'days_start' => $request->get('days_start'),
-            'days_end' => $request->get('days_end'),
         ]);
 
         return redirect()->action('ReportsController@show', $report->id)
@@ -245,8 +241,6 @@ class ReportsController extends Controller
         $this->validate($request, [
             'name' => 'required|unique:reports,name,' . $id . '|max:255',
             'querystring' => 'required',
-            'days_start' => 'required|numeric',
-            'days_end' => 'required|numeric',
         ]);
 
         $report = Report::findOrFail($id);
@@ -254,8 +248,6 @@ class ReportsController extends Controller
         $report->name = $request->get('name');
         $report->querystring = $request->get('querystring');
         $report->updated_by = Auth::user()->id;
-        $report->days_start = $request->get('days_start');
-        $report->days_end = $request->get('days_end');
 
         $report->save();
 
