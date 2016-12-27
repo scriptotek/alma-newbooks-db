@@ -51,6 +51,7 @@
                     <li class="{{ Ekko::isActiveRoute('documents.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
                     <li class="{{ Ekko::isActiveRoute('reports.*') }}"><a href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a></li>                    &nbsp;
                     <li class="{{ Ekko::isActiveRoute('users.*') }}"><a href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a></li>                    &nbsp;
+                    <li class="{{ Ekko::isActiveRoute('my-orders') }}"><a href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a></li>                    &nbsp;
                 </ul>
 
                 <!-- Right Side Of Navbar -->

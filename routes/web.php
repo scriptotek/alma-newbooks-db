@@ -23,6 +23,8 @@ Route::resource('users', 'UsersController', ['only' => [
     'index', 'show', 'edit', 'update'
 ]]);
 
+Route::get('my-orders', 'MyOrdersController@index');
+
 Route::get('reports/{report}/rss', 'ReportsController@rss');
 Route::get('reports/{report}/month/{month}', 'ReportsController@byMonth');
 Route::get('reports/{report}/week/{week}', 'ReportsController@byWeek');
