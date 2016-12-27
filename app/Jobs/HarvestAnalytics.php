@@ -65,21 +65,23 @@ class HarvestAnalytics implements ShouldQueue
      */
     protected function importReport(Report $report)
     {
+        $shortName = basename($report->path);
         $keyCache = [];
         $n = 0; $m = 0; $cn = 0; $cm = 0;
         foreach ($report->rows as $row) {
             $n++;
-            $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $this->createIfNotExists, $keyCache);
+            $doc = AnalyticsReportImporter::docFromRow($row->toArray(), $this->createIfNotExists, $keyCache, $report);
             if (is_null($doc)) {
                 continue;
             }
 
             if (!$doc->exists) {
                 $cn++;
-                \Log::debug('New document.', [
-                    'date' => $doc->receiving_or_activation_date,
-                    'po_line' => $doc->po_line,
-                    'barcode' => $doc->barcode,
+                \Log::debug("[$shortName] Imported new document.", [
+                    'mms_id' => $doc->mms_id,
+                    'sent' => $doc->{Document::SENT_DATE},
+                    'received' => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
+                    'po_line' => $doc->{Document::PO_ID},
                 ]);
 
             } else if ($doc->isDirty()) {
@@ -87,7 +89,7 @@ class HarvestAnalytics implements ShouldQueue
                 foreach ($doc->getDirty() as $k => $v) {
                     $this->handleChange($doc, $k, $doc->getOriginal($k), $v);
 
-                    \Log::debug('Updated existing document.', [
+                    \Log::debug("[$shortName] Updated existing document.", [
                         'id' => $doc->id,
                         'attribute' => $k,
                         'old_value' => $doc->getOriginal($k),
@@ -101,7 +103,7 @@ class HarvestAnalytics implements ShouldQueue
 
             $m++;
         }
-        \Log::info(get_class($this) . ' completed.', [
+        \Log::info("[$shortName] Import completed.", [
             'docs_checked' => $n,
             'new' => $cn,
             'modified' => $cm,

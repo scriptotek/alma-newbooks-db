@@ -4,10 +4,11 @@ namespace App\Importers;
 
 use App\Document;
 use App\Exceptions\InvalidRowException;
+use Scriptotek\Alma\Analytics\Report;
 
 class AnalyticsReportImporter
 {
-    protected static function cleanRow($row)
+    protected static function cleanRow($row, $reportShortName)
     {
         // Publication year: "[2012]" -> "2012", "c2012" -> "2012", etc.
         if (isset($row['publication_date'])) {
@@ -45,7 +46,7 @@ class AnalyticsReportImporter
         }
 
         if (isset($row[Document::PO_ID]) && !preg_match('/POL-/', $row[Document::PO_ID])) {
-            \Log::warning('[AnalyticsReportImporter] Ignoring invalid PO line ref: ' . $row[Document::PO_ID]);
+            \Log::warning("[$reportShortName] Ignoring invalid PO line ref: " . $row[Document::PO_ID]);
             throw new InvalidRowException();
         }
 
@@ -75,10 +76,12 @@ class AnalyticsReportImporter
         }
     }
 
-    public static function docFromRow($row, $create = false, &$keyCache)
+    public static function docFromRow($row, $create = false, &$keyCache, Report $report)
     {
+        $shortName = basename($report->path);
+
         try {
-            $row = self::cleanRow($row);
+            $row = self::cleanRow($row, $shortName);
         } catch (InvalidRowException $e) {
             // ignore this row
             return null;
@@ -102,8 +105,8 @@ class AnalyticsReportImporter
             return null;
         }
         foreach ($row as $k => $v) {
-                \Log::warning('[AnalyticsReportImporter] Ignoring unknown field: ' . $k);
             if (!in_array($k, Document::getFields(true))) {
+                \Log::warning("[$shortName] Ignoring unknown field: $k");
             } else {
                 $doc->{$k} = $v;
             }
