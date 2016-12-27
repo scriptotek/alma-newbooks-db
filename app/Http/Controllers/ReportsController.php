@@ -196,17 +196,19 @@ class ReportsController extends Controller
         $feed = \Rss::feed('2.0', 'UTF-8');
 
         $feed->channel([
-            'title'       => "Channel's title",
-            'description' => "Channel's description",
-            'link'        => "http://www.test.com/"
+            'title'       => $report->name,
+            'description' => 'Tilvekstliste',
+            'link'        => $report->link,
+            'ttl'         => 43200,
         ]);
 
         foreach ($report->documents as $doc) {
 
             $feed->item([
-                'title' => $doc->title,
-                'description|cdata' => $doc->mms_id,
-                'link' => $doc->getPrimoLink(),
+                'title'              => $doc->title,
+                'link'               => $doc->getPrimoLink(),
+                'description|cdata'  => $doc->repr(),
+                'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
             ]);
         }
 
