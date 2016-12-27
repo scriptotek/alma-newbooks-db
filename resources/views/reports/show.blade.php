@@ -44,7 +44,7 @@
                 @endif
                 </h3>
             @endif
-            <ul>
+            <ul class="list">
                 @foreach ($v as $doc)
                     <li>
                         <a href="{{ action('DocumentsController@show', $doc->mms_id) }}">{{ $doc->title }}</a>

@@ -8,7 +8,7 @@
             <a href="{{ action('ReportsController@create') }}">{{ trans('reports.create') }}</a>
         </p>
 
-        <ul>
+        <ul class="list">
             @foreach($reports as $report)
                 <li>
                     <a href="{{ action('ReportsController@show', $report->id) }}">{{ $report->name }}</a>

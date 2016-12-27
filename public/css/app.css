@@ -5780,12 +5780,12 @@ button.close {
 .form-control {
   box-shadow: none; }
 
-#content ul {
+#content ul.list {
   list-style-type: none;
   position: relative; }
-  #content ul > li {
+  #content ul.list > li {
     position: relative; }
-    #content ul > li:before {
+    #content ul.list > li:before {
       content: "\25A0";
       color: #666;
       margin-left: -2.5ex;

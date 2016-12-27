@@ -3,7 +3,7 @@
 return [
 
     'header' => 'Reports',
-    'create' => 'Create',
+    'create' => 'Create new',
     'name' => 'Name',
     'days_start' => 'Days ago to start',
     'days_end' => 'Days ago to end',
