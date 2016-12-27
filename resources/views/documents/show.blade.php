@@ -35,8 +35,12 @@
 		<ul>
 		@foreach($doc->components as $component)
 			<li>
+				@if ($component->item_id)
+					{{ $component->barcode }} / {{ $component->item_id }}
+				@else
+					Item not received or activated yet
+				@endif
 
-				{{ $component->barcode }} / {{ $component->item_id }}
 				<div>
 				@if ($component->library_name)
 					Permanent location: <a href="{{ action('DocumentsController@index', ['k1' => 'library_name', 'r1' => 'eq', 'v1' => $component->library_name]) }}">{{ $component->library_name }}</a>

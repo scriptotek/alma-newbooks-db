@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\HarvestPrintBooksReport;
 use App\Jobs\HarvestEBooksReport;
+use App\Jobs\HarvestPoLinesReport;
 use Illuminate\Console\Command;
 
 class HarvestCommand extends Command
@@ -38,5 +39,6 @@ class HarvestCommand extends Command
 
         dispatch(new HarvestPrintBooksReport($days));
         dispatch(new HarvestEBooksReport($days));
+        dispatch(new HarvestPoLinesReport($days));
     }
 }

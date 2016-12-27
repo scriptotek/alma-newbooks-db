@@ -159,7 +159,8 @@ class DocumentsRequest extends FormRequest
 
         $sortField = $this->get('sort', $this->defaultSortField);
         $sortDir = $this->get('sortDir', $this->defaultSortDirection);
-        $builder->orderBy($sortField, $sortDir);
+        $builder->orderBy($sortField, $sortDir)
+            ->whereNotNull($sortField);
 
         foreach ($this->getStatements() as $stmt) {
             $this->addStatement($builder, $stmt['key'], $stmt['rel'], $stmt['val']);

@@ -64,6 +64,7 @@ class AnalyticsReportImporter
         $keys = [
             Document::ITEM_ID,      // Physical item report
             Document::PORTFOLIO_ID, // Electronic portfolio report
+            Document::PO_ID,        // PO lines report
             Document::MMS_ID,       // Bibliographic record report
         ];
 

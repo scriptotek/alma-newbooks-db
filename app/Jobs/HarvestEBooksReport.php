@@ -24,6 +24,7 @@ class HarvestEBooksReport extends HarvestAnalytics
         'edition',
         'isbn',
         Document::MMS_ID,
+        'bib_modification_date',
         'publication_date',
         'publisher',
         'series',

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Document extends Model
 {
     const RECEIVING_OR_ACTIVATION_DATE = 'receiving_or_activation_date';
+    const SENT_DATE = 'sent_date';
     const PO_ID = 'po_id';
     const MMS_ID = 'mms_id';
     const ITEM_ID = 'item_id';
@@ -27,6 +28,7 @@ class Document extends Model
         // 'item_creation_date',        // date
         'receiving_date',               // datetime
         'po_creation_date',             // datetime
+        'bib_modification_date',        // datetime
         // 'activation_date',           // date
         //'portfolio_creation_date',    // date
     ];
@@ -67,13 +69,17 @@ class Document extends Model
         'po_modified_by',
         'receiving_status',
         'source_type',
+        'note_to_vendor',
+        'expected_receiving_date',
+        'expected_activation_date',
 
         'po_creation_date',
         'po_modification_date',
-        'sent_date',
+        self::SENT_DATE,
 
         // Bibliographic data
         self::MMS_ID,
+        'bib_modification_date',
         'title',
         'edition',
         'author',

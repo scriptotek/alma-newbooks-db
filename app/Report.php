@@ -61,12 +61,20 @@ class Report extends Model
         return $this->getDocuments($startDate, $endDate);
     }
 
-    public function getDocuments($startDate=null, $endDate=null)
+    public function getDocumentsBaseQuery()
     {
-        $query = Document::query()
+        return Document::query()
             ->where(function($query) {
                 return $query->whereRaw($this->querystring);
             });
+    }
+
+    public function getDocuments($startDate=null, $endDate=null)
+    {
+        $query = $this->getDocumentsBaseQuery();
+
+        $query = $query->whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE);
+
         if (!is_null($startDate)) {
             $query = $query->where(Document::RECEIVING_OR_ACTIVATION_DATE, '>=', $startDate->toDateString());
         }

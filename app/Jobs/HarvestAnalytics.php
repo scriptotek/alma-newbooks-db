@@ -50,6 +50,16 @@ class HarvestAnalytics implements ShouldQueue
         }
     }
 
+    protected function saved(Document $doc)
+    {
+        // To be overriden
+    }
+
+    protected function complete()
+    {
+        // To be overriden
+    }
+
     /**
      * @param Report $report
      */
@@ -87,6 +97,7 @@ class HarvestAnalytics implements ShouldQueue
             }
 
             $doc->save();
+            $this->saved($doc);
 
             $m++;
         }
@@ -95,6 +106,7 @@ class HarvestAnalytics implements ShouldQueue
             'new' => $cn,
             'modified' => $cm,
         ]);
+        $this->complete();
     }
 
     /**

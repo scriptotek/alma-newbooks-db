@@ -25,6 +25,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
         'dewey_classification',
         'edition',
         Document::MMS_ID,
+        'bib_modification_date',
         'publication_date',
         'publication_place',
         'publisher',
