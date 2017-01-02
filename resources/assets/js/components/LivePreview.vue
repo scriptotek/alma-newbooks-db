@@ -49,8 +49,13 @@
                 this.$set('docs', response.json().docs);
             }, (response) => {
                     console.log('Failed');
+                    var j = response.json();
+                    var errormsg = j.error;
+                    if (!errormsg) {
+                        errormsg = JSON.stringify(j);
+                    }
                     this.$set('status', 'error');
-                    this.$set('error', response.json().error);
+                    this.$set('error', errormsg);
                 });
             }
         },

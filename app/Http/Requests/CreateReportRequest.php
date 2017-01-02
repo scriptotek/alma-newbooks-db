@@ -17,6 +17,18 @@ class CreateReportRequest extends FormRequest
     }
 
     /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'querystring.regex' => 'The query cannot contain po_creator',
+        ];
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -33,7 +45,7 @@ class CreateReportRequest extends FormRequest
             ],
             'querystring' => [
                 'required',
-                'regex:/^((?!po_creator).)*$/',
+                'regex:/^((?!po_creator).)*$/s',
             ],
         ];
     }
