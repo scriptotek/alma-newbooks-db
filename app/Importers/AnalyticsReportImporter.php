@@ -5,9 +5,34 @@ namespace App\Importers;
 use App\Document;
 use App\Exceptions\InvalidRowException;
 use Scriptotek\Alma\Analytics\Report;
+use function Functional\reduce_left;
 
 class AnalyticsReportImporter
 {
+    protected static function validateRow($row, $reportShortName)
+    {
+        $key = reduce_left(self::getKey($row), function($value, $index, $collection, $reduction) {
+            return $index . '=' . $value;
+        });
+        $intro = "[$reportShortName] $key : ";
+
+        if (isset($row[Document::MMS_ID]) && strlen($row[Document::MMS_ID]) != 18) {
+            \Log::warning("$intro Expected MMS ID of length 18, but got " . strlen($row[Document::MMS_ID]) . ": '" . $row[Document::MMS_ID] . "'");
+            throw new InvalidRowException();
+        }
+
+        if (isset($row['bib_modification_date']) && !preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $row['bib_modification_date'])) {
+            \Log::warning("$intro Invalid bib_modification_date: '" . $row['bib_modification_date'] . "'");
+            throw new InvalidRowException();
+        }
+
+
+        if (isset($row[Document::PO_ID]) && !preg_match('/POL-/', $row[Document::PO_ID])) {
+            \Log::warning("$intro Expected PO line reference to start with 'POL-', but got '" . $row[Document::PO_ID] . "'");
+            throw new InvalidRowException();
+        }
+    }
+
     protected static function cleanRow($row, $reportShortName)
     {
         // Publication year: "[2012]" -> "2012", "c2012" -> "2012", etc.
@@ -45,11 +70,6 @@ class AnalyticsReportImporter
             }
         }
 
-        if (isset($row[Document::PO_ID]) && !preg_match('/POL-/', $row[Document::PO_ID])) {
-            \Log::warning("[$reportShortName] Ignoring invalid PO line ref: " . $row[Document::PO_ID]);
-            throw new InvalidRowException();
-        }
-
         // Remove year from author
        if (isset($row['author'])) {
            $row['author'] = preg_replace('/\s*[0-9]{4}-?([0-9]{4})?/', '', $row['author']);
@@ -81,6 +101,7 @@ class AnalyticsReportImporter
         $shortName = basename($report->path);
 
         try {
+            self::validateRow($row, $shortName);
             $row = self::cleanRow($row, $shortName);
         } catch (InvalidRowException $e) {
             // ignore this row
