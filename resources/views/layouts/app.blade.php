@@ -48,10 +48,13 @@
             <div class="collapse navbar-collapse" id="app-navbar-collapse">
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
-                    <li class="{{ Ekko::isActiveRoute('documents.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
                     <li class="{{ Ekko::isActiveRoute('reports.*') }}"><a href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a></li>                    &nbsp;
-                    <li class="{{ Ekko::isActiveRoute('users.*') }}"><a href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a></li>                    &nbsp;
-                    <li class="{{ Ekko::isActiveRoute('my-orders') }}"><a href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a></li>                    &nbsp;
+                    @if (Auth::user())
+                        <li class="{{ Ekko::isActiveRoute('templates.*') }}"><a href="{{ action('TemplatesController@index') }}">{{ trans('templates.header') }}</a></li>                    &nbsp;
+                        <li class="{{ Ekko::isActiveRoute('documents.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
+                        <li class="{{ Ekko::isActiveRoute('users.*') }}"><a href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a></li>                    &nbsp;
+                        <li class="{{ Ekko::isActiveRoute('my-orders') }}"><a href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a></li>                    &nbsp;
+                    @endif
                 </ul>
 
                 <!-- Right Side Of Navbar -->
@@ -130,12 +133,6 @@
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js"></script>
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/mode-mysql.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/mode-html.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/theme-iplastic.js"></script>
-    -->
     @yield('scripts')
 </body>
 </html>

@@ -5,19 +5,19 @@ namespace App\Http\Controllers;
 use App\Document;
 use App\Http\Requests\CreateReportRequest;
 use App\Report;
+use App\Template;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 
 class ReportsController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'store', 'update', 'destroy']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'destroy']]);
     }
 
     /**
@@ -67,28 +67,9 @@ class ReportsController extends Controller
     public function create()
     {
         return view('reports.edit', [
-            'report' => new Report,
+            'report' => new Report(['max_items' => 30]),
             'fields' => Document::getFields(),
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  CreateReportRequest $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(CreateReportRequest $request)
-    {
-        $report = Report::create([
-            'name' => $request->get('name'),
-            'querystring' => $request->get('querystring'),
-            'created_by' => Auth::user()->id,
-            'updated_by' => Auth::user()->id,
-        ]);
-
-        return redirect()->action('ReportsController@show', $report->id)
-            ->with('status', trans('reports.saved'));
     }
 
     /**
@@ -202,12 +183,11 @@ class ReportsController extends Controller
             'ttl'         => 43200,
         ]);
 
-        foreach ($report->documents as $doc) {
-
+        foreach ($report->documents->take($report->maxItems) as $doc) {
             $feed->item([
                 'title'              => $doc->title,
                 'link'               => $doc->getPrimoLink(),
-                'description|cdata'  => $doc->repr(),
+                'description|cdata'  => $report->template->render($doc),
                 'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
             ]);
         }
@@ -225,10 +205,37 @@ class ReportsController extends Controller
     {
         $report = Report::findOrFail($id);
 
+        $templates = [];
+        foreach (Template::get() as $template) {
+            $templates[$template->id] = $template->name;
+        }
+
         return view('reports.edit', [
             'report' => $report,
+            'templates' => $templates,
             'fields' => Document::getFields(),
         ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  CreateReportRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(CreateReportRequest $request)
+    {
+        $report = Report::create([
+            'name' => $request->get('name'),
+            'querystring' => $request->get('querystring'),
+            'max_items' => $request->get('max_items'),
+            'template_id' => $request->get('template_id'),
+            'created_by' => Auth::user()->id,
+            'updated_by' => Auth::user()->id,
+        ]);
+
+        return redirect()->action('ReportsController@show', $report->id)
+            ->with('status', trans('reports.saved'));
     }
 
     /**
@@ -240,22 +247,19 @@ class ReportsController extends Controller
      */
     public function update(CreateReportRequest $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required|unique:reports,name,' . $id . '|max:255',
-            'querystring' => 'required',
-        ]);
-
         $report = Report::findOrFail($id);
 
         $report->name = $request->get('name');
         $report->querystring = $request->get('querystring');
+        $report->max_items = $request->get('max_items');
+        $report->template_id = $request->get('template_id');
         $report->updated_by = Auth::user()->id;
 
         $report->save();
 
         return redirect()
             ->action('ReportsController@show', $id)
-            ->with('status', Lang::get('reports.saved'));
+            ->with('status', trans('reports.saved'));
     }
 
     /**
@@ -285,6 +289,6 @@ class ReportsController extends Controller
 
         return redirect()
             ->action('ReportsController@index')
-            ->with('status', Lang::get('reports.deleted'));
+            ->with('status', trans('reports.deleted'));
     }
 }

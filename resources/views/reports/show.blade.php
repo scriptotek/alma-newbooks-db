@@ -7,7 +7,8 @@
 
                 <a href="{{ action('ReportsController@edit', $report->id) }}">{{ trans('reports.edit') }}</a> |
                 <a href="{{ action('ReportsController@delete', $report->id) }}">{{ trans('reports.delete') }}</a> |
-                <a href="{{ action('ReportsController@rss', $report->id) }}">{{ trans('reports.rss') }}</a>
+                <a href="{{ action('ReportsController@rss', $report->id) }}">{{ trans('reports.rss') }}</a> |
+                <a href="{{ action('TemplatesController@show', $report->template->id) }}">{{ trans('templates.show') }}</a>
 
                 <p class="text-muted">
                     <em>
@@ -22,6 +23,9 @@
                 <p>
                     <code>{{ $report->querystring }}</code>
                 </p>
+
+                <h3>RSS-snutt til Vortex</h3>
+                <pre><code>${include:feed url=[{{ action('ReportsController@rss', $report->id) }}] item-description=[true] item-picture=[true] published-date=[none] max-messages=[30] allow-markup=[true] all-messages-link=[true] if-empty-message=[Ingen nye bøker]}</code></pre>
         @endif
     </div>
 
@@ -47,9 +51,12 @@
             <ul class="list">
                 @foreach ($v as $doc)
                     <li>
-                        <a href="{{ action('DocumentsController@show', $doc->mms_id) }}">{{ $doc->title }}</a>
-                        <div style="font-size: 85%;">
-                            {!! $doc->repr() !!}
+                        <a style="font-size: 120%;" href="{{ action('DocumentsController@show', $doc->mms_id) }}">{{ $doc->title }}</a> (<a href="{{ $doc->getPrimoLink() }}">Primo</a>)
+                        <!--<div style="font-family: monospace; color: #484;">
+                            {{ $doc->{App\Document::RECEIVING_OR_ACTIVATION_DATE} }}
+                        </div>-->
+                        <div>
+                            {!! $report->template->render($doc) !!}
                         </div>
 
                     </li>

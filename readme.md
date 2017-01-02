@@ -194,7 +194,7 @@ stdout_logfile=/path/to/almanewbooks/storage/logs/worker.log
 
 After code changes:
 
-    sudo supervisorctl restart ub-tilvekst-worker:*
+    sudo supervisorctl restart ub-tilvekst:*
 
 ## Some lessons learned
 

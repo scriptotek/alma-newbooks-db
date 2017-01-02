@@ -19,7 +19,8 @@
         "scriptotek/alma-client": "^0.5.1",
         "aacotroneo/laravel-saml2": "^0.8.0",
         "arcanedev/log-viewer": "~4.0",
-        "lstrojny/functional-php": "^1.4"
+        "lstrojny/functional-php": "^1.4",
+        "twig/twig": "^1.30"
 
     },
     "require-dev": {

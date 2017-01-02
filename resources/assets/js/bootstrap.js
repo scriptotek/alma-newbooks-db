@@ -1,5 +1,5 @@
 
-window._ = require('lodash');
+// window._ = require('lodash');
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -9,6 +9,7 @@ window._ = require('lodash');
 
 window.$ = window.jQuery = require('jquery');
 require('bootstrap-sass');
+require('bootstrap-select');
 
 /**
  * Load the ACE editor
@@ -16,7 +17,8 @@ require('bootstrap-sass');
 
 require('brace');
 require('brace/mode/mysql');
-require('brace/theme/iplastic');
+require('brace/mode/twig');
+require('brace/theme/monokai');
 require('brace/ext/language_tools');
 
 /**

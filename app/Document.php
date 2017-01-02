@@ -160,15 +160,6 @@ class Document extends Model
         return (string) $this->title . ' (' . $this->author . ')';
     }
 
-    public function repr()
-    {
-        return ($this->series ? '<div>' . $this->series . '</div>' : '') .
-               ($this->author ? '<div>' . $this->author . '</div>' : '') .
-               ($this->publication_date ? '<div>' . $this->publication_date .
-                    ($this->edition ? ' (' . $this->edition . ')' : '') .
-                '</div>' : '') ;
-    }
-
     public function getComponentsAttribute()
     {
         return Document::where('mms_id', '=', $this->{self::MMS_ID})->get();

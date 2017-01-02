@@ -12,6 +12,8 @@ class HarvestPoLinesReport extends HarvestAnalytics
 
     protected $filter = '';
 
+    protected $po_line_ids = [];
+
     protected $headers = [
         'author',
         'edition',

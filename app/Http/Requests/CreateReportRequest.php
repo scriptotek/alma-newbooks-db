@@ -43,6 +43,15 @@ class CreateReportRequest extends FormRequest
                 'max:255',
                 $uniqueName,
             ],
+            'max_items' => [
+                'required',
+                'integer',
+                'between:0,100',
+            ],
+            'template_id' => [
+                'required',
+                'integer',
+            ],
             'querystring' => [
                 'required',
                 'regex:/^((?!po_creator).)*$/s',

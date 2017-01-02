@@ -17,6 +17,7 @@ if (!ini_get("auto_detect_line_endings")) {
 
 // To get month names in Norwegian
 setlocale(LC_TIME, 'nb_NO');
+\Carbon\Carbon::setLocale('no');
 
 // To get group writable log files
 umask(0002);

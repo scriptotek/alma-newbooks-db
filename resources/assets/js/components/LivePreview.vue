@@ -2,16 +2,16 @@
     <div>
 
         <p v-if="status == 'blank'" class="bg-warning">No query entered</p>
-        <p v-if="status == 'ok'" class="bg-success">Query is valid</p>
-        <p v-if="status == 'pending'" class="bg-warning">Checking query...</p>
-        <p v-if="status == 'error'" class="bg-danger">Query failed: {{error}}</p>
+        <p v-if="status == 'ok'" class="bg-success">Input is valid</p>
+        <p v-if="status == 'pending'" class="bg-warning">Checking input...</p>
+        <p v-if="status == 'error'" class="bg-danger">Input is invalid: {{error}}</p>
 
-        <div class="panel panel-default">
+        <div class="panel panel-default" v-if="docs.length">
             <div class="panel-heading">Preview</div>
 
             <div class="panel-body">
                 <div v-for="doc in docs">
-                    <div><a href="/documents/{{ doc.mms_id }}">{{ doc.receiving_or_activation_date.split(' ')[0] }} - {{ doc.title }}</a> <small><em>{{ doc.location_name }} {{ doc.permanent_call_number }}</em></small></div>
+                    <div><a href="/documents/{{ doc.mms_id }}">{{ doc.receiving_or_activation_date.split(' ')[0] }} - {{ doc.title }}</a> <small>{{ doc.repr }}</small></div>
                 </div>
             </div>
         </div>
@@ -20,9 +20,11 @@
 </template>
 
 <script>
-    var $ = require ('jquery');
     export default {
-        props: ['editor'],
+        props: [
+            'editor',
+            'endpoint'
+        ],
         data: function() {
             return {
                 error: '',
@@ -34,21 +36,24 @@
             preview() {
                 var params = {
                     name: 'random-title' + Math.random(),
-                    querystring: $('#' + this.editor).val(),
+                    max_items: 30,
+                    template_id: 1,
                 };
-                console.log(params);
-                if (params.querystring.trim() == '') {
+                params[this.editor] = document.getElementById(this.editor).value;
+                if (params[this.editor].trim() == '') {
                     this.$set('status', 'blank');
                     return;
                 }
                 this.$set('status', 'pending');
-                this.$http.get('/reports/preview', {params: params})
+                this.$http.get('/' + this.endpoint + '/preview', {params: params})
                         .then((response) => {
                     // console.log(response.json().docs);
                     this.$set('status', 'ok');
                 this.$set('docs', response.json().docs);
             }, (response) => {
                     console.log('Failed');
+                    this.$set('status', 'error');
+                    this.$set('error', 'Unknown error');
                     var j = response.json();
                     var errormsg = j.error;
                     if (!errormsg) {

@@ -14,7 +14,7 @@ class Report extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'querystring', 'created_by', 'updated_by',
+        'name', 'querystring', 'created_by', 'updated_by', 'max_items', 'template_id',
     ];
 
     protected $casts = [
@@ -35,6 +35,14 @@ class Report extends Model
     public function updatedBy()
     {
         return $this->belongsTo('App\User', 'updated_by');
+    }
+
+    /**
+     * Get the associated template.
+     */
+    public function template()
+    {
+        return $this->belongsTo('App\Template');
     }
 
     public function getDocumentsAttribute()

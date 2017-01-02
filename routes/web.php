@@ -32,6 +32,8 @@ Route::get('reports/preview', 'ReportsController@preview');
 Route::get('reports/{report}/delete', 'ReportsController@delete');
 Route::resource('reports', 'ReportsController');
 
+Route::get('templates/preview', 'TemplatesController@preview');
+Route::resource('templates', 'TemplatesController');
 
 Route::get('saml2/error', 'Auth\LoginController@error');
 

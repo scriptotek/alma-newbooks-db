@@ -2,10 +2,13 @@
 
 @section('content')
     <div class="container">
-        <ul>
-            <li><a href="/documents">{{ trans('documents.header') }}</a></li>
-            <li><a href="/reports">{{ trans('reports.header') }}</a></li>
-            <li><a href="/users">{{ trans('users.header') }}</a></li>
-        </ul>
+        <p>
+            Database contents:
+            {{ App\Document::count() }} {{ lcfirst(trans('documents.header')) }},
+            {{ App\Report::count() }} <a href="/reports">{{ lcfirst(trans('reports.header')) }}</a>,
+            {{ App\Template::count() }} {{ lcfirst(trans('templates.header')) }}
+            and
+            {{ App\User::count() }} users.
+        </p>
     </div>
 @endsection
