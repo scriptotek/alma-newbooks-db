@@ -21,7 +21,7 @@ class CreateChangesTable extends Migration
             $table->text('new_value')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('document_id')->references('id')->on('documents');
+            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
         });
     }
 
