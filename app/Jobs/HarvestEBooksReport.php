@@ -21,6 +21,7 @@ class HarvestEBooksReport extends HarvestAnalytics
     protected $headers = [
         'author',
         'bibliographic_level',
+        'dewey_classification',
         'edition',
         'isbn',
         Document::MMS_ID,
@@ -29,7 +30,6 @@ class HarvestEBooksReport extends HarvestAnalytics
         'publisher',
         'series',
         'title',
-        'dewey_classification',
         'collection_name',
         'activation_date',
         'portfolio_creation_date',
