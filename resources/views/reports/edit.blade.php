@@ -3,7 +3,13 @@
 @section('content')
     <div class="container">
 
-        <h2>{{ trans('reports.edit') }}</h2>
+        <h2>
+        @if (is_null($report->id))
+        {{ trans('reports.create') }}
+        @else
+        {{ trans('reports.edit') }}
+        @endif
+        </h2>
 
         @if (count($errors) > 0)
             <div class="alert alert-danger">
@@ -87,7 +93,7 @@
                 </div>
             </div>
 
-            <live-preview editor="querystring" endpoint="reports"></live-preview>
+            <live-preview editor="querystring" endpoint="lists"></live-preview>
 
         </form>
     </div>

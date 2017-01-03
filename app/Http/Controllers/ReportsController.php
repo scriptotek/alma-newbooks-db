@@ -60,19 +60,6 @@ class ReportsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('reports.edit', [
-            'report' => new Report(['max_items' => 30]),
-            'fields' => Document::getFields(),
-        ]);
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -193,6 +180,25 @@ class ReportsController extends Controller
         }
 
         return response($feed, 200)->header('Content-Type', 'text/xml');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $templates = [];
+        foreach (Template::get() as $template) {
+            $templates[$template->id] = $template->name;
+        }
+
+        return view('reports.edit', [
+            'report' => new Report(['max_items' => 30]),
+            'templates' => $templates,
+            'fields' => Document::getFields(),
+        ]);
     }
 
     /**

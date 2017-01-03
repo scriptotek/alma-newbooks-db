@@ -8,7 +8,7 @@ return [
     'body' => 'Template body',
     'edit' => 'Edit template',
     'show' => 'Show template',
-    'usage' => 'Reports using this template',
+    'usage' => 'Lists using this template',
     'saved' => 'Template saved successfully!',
 
 ];

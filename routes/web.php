@@ -25,12 +25,19 @@ Route::resource('users', 'UsersController', ['only' => [
 
 Route::get('my-orders', 'MyOrdersController@index');
 
-Route::get('reports/{report}/rss', 'ReportsController@rss');
-Route::get('reports/{report}/month/{month}', 'ReportsController@byMonth');
-Route::get('reports/{report}/week/{week}', 'ReportsController@byWeek');
-Route::get('reports/preview', 'ReportsController@preview');
-Route::get('reports/{report}/delete', 'ReportsController@delete');
-Route::resource('reports', 'ReportsController');
+Route::get('lists/{report}/rss', 'ReportsController@rss');
+Route::get('lists/{report}/month/{month}', 'ReportsController@byMonth');
+Route::get('lists/{report}/week/{week}', 'ReportsController@byWeek');
+Route::get('lists/{report}/delete', 'ReportsController@delete');
+
+Route::get('lists', 'ReportsController@index')->name('reports.index');
+Route::get('lists/preview', 'ReportsController@preview');
+Route::get('lists/create', 'ReportsController@create')->name('reports.create');
+Route::get('lists/{report}', 'ReportsController@show')->name('reports.show');
+Route::get('lists/{report}/edit', 'ReportsController@edit')->name('reports.edit');
+Route::post('lists', 'ReportsController@store')->name('reports.store');
+Route::put('lists/{report}', 'ReportsController@update')->name('reports.update');
+// Route::resource('lists', 'ReportsController');
 
 Route::get('templates/preview', 'TemplatesController@preview');
 Route::resource('templates', 'TemplatesController');

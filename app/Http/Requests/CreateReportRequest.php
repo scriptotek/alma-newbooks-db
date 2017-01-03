@@ -37,6 +37,7 @@ class CreateReportRequest extends FormRequest
     {
         $id = $this->route('report');
         $uniqueName = isset($id) ? 'unique:reports,name,' . $id : 'unique:reports';
+
         return [
             'name' => [
                 'required',
