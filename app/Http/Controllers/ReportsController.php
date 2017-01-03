@@ -109,9 +109,10 @@ class ReportsController extends Controller
             'report' => $report,
             'docs' => $docs,
             'groups' => $groups,
-            'header' => $currentMonth->formatLocalized('%B %Y'),
+            'header' => ucfirst($currentMonth->formatLocalized('%B %Y')),
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
+            'groupOptions' => ['dewey', 'week'],
         ]);
     }
 
@@ -128,8 +129,7 @@ class ReportsController extends Controller
         list($year, $week) = explode('-', $week);
         $year = intval($year);
         $week = intval($week);
-
-        $currentWeek = new Carbon("{$year}W{$week}");
+        $currentWeek = new Carbon(sprintf('%04dW%02d', $year, $week));
 
         $docs = $report->getDocumentsFromweek($year, $week);
         list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
@@ -146,10 +146,12 @@ class ReportsController extends Controller
             'report' => $report,
             'docs' => $docs,
             'groups' => $groups,
-            'header' => $currentWeek->formatLocalized('Uke %W'),
+            'header' => $currentWeek->formatLocalized('Uke %W, %Y'),
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
-        ]);    }
+            'groupOptions' => ['dewey'],
+        ]);
+    }
 
     /**
      * Display the specified resource as rss.
