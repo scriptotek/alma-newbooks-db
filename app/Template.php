@@ -19,14 +19,6 @@ class Template extends Model
     ];
 
     /**
-     * Reports that use this template.
-     */
-    public function reports()
-    {
-        return $this->hasMany('App\Report');
-    }
-
-    /**
      * The template versions.
      */
     public function versions()
@@ -44,19 +36,39 @@ class Template extends Model
 
     public function render(Document $doc, $templateBody = null)
     {
-        $twig = new \Twig_Environment(new \Twig_Loader_String());
+        $all = [];
+        foreach (Template::with('currentVersion')->get() as $tpl) {
+            $name = 'template' . $tpl->id;
+            $all[$name] = $tpl->currentVersion->body;
+        }
+
+        $currentTemplateName = 'template' . $this->id;
+
+        if (!is_null($templateBody)) {
+            $all[$currentTemplateName] = $templateBody;
+        }
+
+        $twig = new \Twig_Environment(new \Twig_Loader_Array($all));
 
         $humanDiffFilter = new \Twig_SimpleFilter('humandiff', function ($string, array $options = array()) {
+            if (isset($options[0])) {
+                setlocale(\LC_TIME, $options[0]);
+                \Carbon\Carbon::setLocale(explode('_', $options[0])[0]);
+            }
             return (new \Carbon\Carbon($string))->diffForHumans();
-        });
+        }, array('is_variadic' => true));
         $twig->addFilter($humanDiffFilter);
 
         $dateformatFilter = new \Twig_SimpleFilter('dateformat', function ($string, array $options = array()) {
+            if (isset($options[1])) {
+                setlocale(\LC_TIME, $options[1]);
+                \Carbon\Carbon::setLocale(explode('_', $options[1])[0]);
+            }
             return (new \Carbon\Carbon($string))->formatLocalized($options[0]);
         }, array('is_variadic' => true));
         $twig->addFilter($dateformatFilter);
 
-        return $twig->render($templateBody ?: $this->currentVersion->body, $doc->toArray());
+        return $twig->render($currentTemplateName, $doc->toArray());
     }
 
     public function addVersionAndSave($body)
@@ -73,6 +85,8 @@ class Template extends Model
 
         $this->current_version_id = $version->id;
         $this->save();
+
+        return $this;
     }
 
 }
