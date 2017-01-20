@@ -15,6 +15,8 @@ class Document extends Model
 
     const PO_CREATOR = 'po_creator';
 
+    protected $appends = ['cover'];
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -142,6 +144,11 @@ class Document extends Model
     public function changes()
     {
         return $this->hasMany('App\Change');
+    }
+
+    public function getCoverAttribute()
+    {
+        return null; // @TODO: Get URL from cover service
     }
 
     public static function getFields($includeSensitive=false)
