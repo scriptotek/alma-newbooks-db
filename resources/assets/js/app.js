@@ -19,6 +19,12 @@ require('./bootstrap');
 Vue.component('live-preview', require('./components/LivePreview.vue'));
 Vue.component('ace-editor', require('./components/AceEditor.vue'));
 
+Vue.prototype.trans = (key, params={}) => {
+    return _.reduce(params, function(result, value, key) {
+        return _.replace(result, key, value);
+    }, _.get(window.Laravel.translations, key, key));
+};
+
 const app = new Vue({
     el: 'body'
 });

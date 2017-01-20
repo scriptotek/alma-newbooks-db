@@ -19,9 +19,19 @@
 
     <!-- Scripts -->
     <script>
-        window.Laravel = <?php echo json_encode([
-            'csrfToken' => csrf_token(),
-        ]); ?>
+        window.Laravel = <?php 
+            $lang_files = Storage::disk('resources')->files('lang/' . App::getLocale());
+            $translations = [];
+            foreach ($lang_files as $f) {
+                $filename = pathinfo($f)['filename'];
+                $translations[$filename] = trans($filename);
+            }
+            echo json_encode([
+                'csrfToken' => csrf_token(),
+                'translations' => $translations,
+            ]);
+        ?>
+
     </script>
 </head>
 <body>
