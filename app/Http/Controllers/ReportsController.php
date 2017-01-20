@@ -12,12 +12,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use function Functional\map;
+
 class ReportsController extends Controller
 {
 
     public function __construct()
     {
         $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'destroy']]);
+    }
+
+    /**
+     * Helper method, should probably be moved elsewhere.
+     */
+    protected function allTemplates()
+    {
+        $templates = [];
+        foreach (Template::orderBy('name', 'asc')->get() as $template) {
+            $templates[$template->id] = $template->name;
+        }
+        return $templates;
     }
 
     /**
@@ -191,14 +205,9 @@ class ReportsController extends Controller
      */
     public function create()
     {
-        $templates = [];
-        foreach (Template::get() as $template) {
-            $templates[$template->id] = $template->name;
-        }
-
         return view('reports.edit', [
-            'report' => new Report(['max_items' => 30]),
-            'templates' => $templates,
+            'report' => new Report(['template_id' => 1]),
+            'templates' => $this->allTemplates(),
             'fields' => Document::getFields(),
         ]);
     }
@@ -213,14 +222,9 @@ class ReportsController extends Controller
     {
         $report = Report::findOrFail($id);
 
-        $templates = [];
-        foreach (Template::get() as $template) {
-            $templates[$template->id] = $template->name;
-        }
-
         return view('reports.edit', [
             'report' => $report,
-            'templates' => $templates,
+            'templates' => $this->allTemplates(),
             'fields' => Document::getFields(),
         ]);
     }

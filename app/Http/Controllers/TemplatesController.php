@@ -23,7 +23,7 @@ class TemplatesController extends Controller
     public function index()
     {
         return view('templates.index', [
-            'templates' => Template::get(),
+            'templates' => Template::orderBy('name', 'asc')->get(),
         ]);
     }
 
