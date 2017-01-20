@@ -8,14 +8,12 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">UiO-innlogging</h3>
+                    <h3 class="panel-title">SAML-innlogging</h3>
                 </div>
                 <div class="panel-body">
-                    <a class="btn btn-primary" href="{{ route('saml_login') }}">Logg inn sikkert med Weblogin</a>
+                    <a class="btn btn-primary" href="{{ route('saml_login') }}">Logg inn med SAML</a>
                 </div>
             </div>
-
-            {{--
 
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -77,7 +75,7 @@
                     </form>
                 </div>
             </div>
-            --}}
+
         </div>
     </div>
 </div>

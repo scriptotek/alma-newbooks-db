@@ -30,7 +30,13 @@ class Saml2EventSubscriber
         $attrs = $data->getAttributes();
 
         $uio_id = $attrs['uid'][0];
-        $primary_id = $uio_id . '@uio.no';
+        $primary_id = $uio_id . '@uio.no';  // @TODO: Move to config
+
+        if (!$uio_id) {
+            \Log::notice('No uid returned in SAML2 login event.');
+            \Session::flash('error', 'An unknown error occured during login.');
+            return;
+        }
 
         $user = User::where('uio_id', '=', $uio_id)->first();
         if (is_null($user)) {
@@ -39,12 +45,13 @@ class Saml2EventSubscriber
                 $alma_user_data = $this->alma->users->get($primary_id);
             } catch (\Scriptotek\Alma\Exception\ClientException $e) {
                 \Log::notice('Access denied for SAML user not found in Alma.', ['email' => $primary_id]);
-                \Session::flash('error', 'The UiO ID isn\'t registed to any users in Alma.');
+                \Session::flash('error', 'The user isn\'t registed in Alma.');
                 return;
             }
 
-            if ($alma_user_data->status->value != 'ACTIVE' || $alma_user_data->user_group->desc != 'Egne ansatte') {
-                \Log::notice('Access denied for SAML user not in the "Egne ansatte" group in Alma.', ['email' => $primary_id]);
+            if ($alma_user_data->status->value != 'ACTIVE' || $alma_user_data->user_group->desc != config('alma.employee_group')) {
+                \Log::notice('Access denied for SAML user not in the "' . config('alma.employee_group') . '" group in Alma.',
+                    ['email' => $primary_id]);
                 \Session::flash('error', 'The Alma user isn\'t active or isn\'t in the employee group.');
                 return;
             }
@@ -52,6 +59,7 @@ class Saml2EventSubscriber
             \Log::notice('Registered new SAML user.', ['email' => $primary_id]);
 
             $user = new User();
+            $user->activated = true;
             $user->uio_id = $uio_id;
             $user->name = $attrs['cn'][0];
             $user->email = $attrs['mail'][0];

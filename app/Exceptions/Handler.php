@@ -60,6 +60,10 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest('saml2/login');
+        if (config('auth.use_saml')) {
+            return redirect()->guest('saml2/login');
+        }
+
+        return redirect()->guest('login');
     }
 }

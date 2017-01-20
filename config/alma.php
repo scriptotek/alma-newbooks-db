@@ -28,4 +28,15 @@ return array(
         'sru' => env('ALMA_NZ_SRU_URL'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Employee group name
+    |--------------------------------------------------------------------------
+    |
+    | Only allow members of this Alma group to login. Use the group *name*,
+    | not code.
+    |
+    */
+    'employee_group' => env('ALMA_EMPLOYEE_GROUP'),
+
 );

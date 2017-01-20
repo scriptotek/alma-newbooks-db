@@ -21,6 +21,7 @@ Route::resource('documents', 'DocumentsController', ['only' => [
     'index', 'show'
 ]]);
 
+Route::get('user/activation/{token}', 'Auth\LoginController@activateUser')->name('user.activate');
 Route::resource('users', 'UsersController', ['only' => [
     'index', 'show', 'edit', 'update'
 ]]);

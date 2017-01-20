@@ -71,7 +71,7 @@ class Template extends Model
         return $twig->render($currentTemplateName, $doc->toArray());
     }
 
-    public function addVersionAndSave($body)
+    public function addVersionAndSave($body, $created_by)
     {
         $parent_version_id = $this->current_version_id;
 
@@ -79,7 +79,7 @@ class Template extends Model
             'template_id'       => $this->id,
             'parent_version_id' => $parent_version_id,
             'body'              => $body,
-            'created_by'        => \Auth::user()->id,
+            'created_by'        => $created_by,
             'created_at'        => Carbon::now(),
         ]);
 
