@@ -57,15 +57,11 @@
             </div>
 
             <div class="alert alert-warning">
-                <strong>Merk:</strong> Skjemaet lar deg skrive en hvilken som helst spørring mot databasen.
-                Det er ikke farlig om du skriver noe feil, da får du bare en feilmelding.
-                Du vil ikke utilsiktet ødelegge noe, men hvis du faktisk <em>ønsker</em> å slette noe (grunnet dårlig
-                dag på jobben eller noe sånt) så kommer du til å få til det, så du trenger ikke å teste det
-                bare for å teste ;)
+                <strong>{{ trans('reports.please_note') }}:</strong> {{ trans('reports.do_no_harm') }}
             </div>
 
 
-            <div class="form-group">
+            <div>
                 <label for="querystring">{{ trans('reports.querystring') }}</label>
 
                 <!-- Using a value rather than slot because of https://github.com/vuejs/Discussion/issues/492 -->
