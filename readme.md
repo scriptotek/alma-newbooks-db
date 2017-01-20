@@ -29,7 +29,10 @@ In the base directory, run:
     $ npm install
     $ npm run prod
 
-Copy `.env.example` to `.env` and edit it to include your database connection configuration. Then create the database tables using:
+Copy `.env.example` to `.env` and edit it to include your database connection configuration
+and an Alma API key from [Developer Network](https://developers.exlibrisgroup.com) (If you
+use SAML login, it needs read access to both Analytics and Users, otherwise just Analytics.
+In the future, access to Bibs might also be needed). Then create the database tables using:
 
     $ php artisan migrate
 
