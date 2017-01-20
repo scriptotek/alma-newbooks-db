@@ -11,8 +11,12 @@
                     <a href="{{ action('DocumentsController@show', $doc->id) }}">{{ $doc }}</a>
                 </div>
                 <div>
-                    Order sent: {{ $doc->sent_date }}
-                    {{ $doc->expected_receiving_date ? 'Expected receiving date: '. $doc->expected_receiving_date : '' }}
+                    @if ($doc->sent_date)
+                        Order sent: {{ $doc->sent_date }}
+                        {{ $doc->expected_receiving_date ? 'Expected receiving date: '. $doc->expected_receiving_date : '' }}
+                    @else
+                        Order not sent yet
+                    @endif
                 </div>
             </li>
         </ul>
