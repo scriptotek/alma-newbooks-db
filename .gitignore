@@ -1,10 +1,12 @@
 /node_modules
 /public/storage
+/public/js/app.js
+/public/css/app.css
+/public/css/app.css.map
+/public/fonts
 /vendor
 /.idea
 .env
 /composer.lock
-public/css/app.css.map
-public/fonts
 storage/debugbar
 yarn.lock
