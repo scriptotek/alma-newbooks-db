@@ -1,10 +1,10 @@
 <template>
     <div>
 
-        <p v-if="status == 'blank'" class="bg-warning">No query entered</p>
-        <p v-if="status == 'ok'" class="bg-success">Input is valid</p>
-        <p v-if="status == 'pending'" class="bg-warning">Checking input...</p>
-        <p v-if="status == 'error'" class="bg-danger">Input is invalid: {{error}}</p>
+        <p v-if="status == 'blank'" class="alert alert-warning">No query entered</p>
+        <p v-if="status == 'ok'" class="alert alert-success">The query is valid</p>
+        <p v-if="status == 'pending'" class="alert alert-warning">Checking query...</p>
+        <p v-if="status == 'error'" class="alert alert-danger">The query is invalid: {{error}}</p>
 
         <div class="panel panel-default" v-if="docs.length">
             <div class="panel-heading">Preview</div>
@@ -46,22 +46,25 @@
                 }
                 this.$set('status', 'pending');
                 this.$http.get('/' + this.endpoint + '/preview', {params: params})
-                        .then((response) => {
-                    // console.log(response.json().docs);
-                    this.$set('status', 'ok');
-                this.$set('docs', response.json().docs);
-            }, (response) => {
-                    console.log('Failed');
-                    this.$set('status', 'error');
-                    this.$set('error', 'Unknown error');
-                    var j = response.json();
-                    var errormsg = j.error;
-                    if (!errormsg) {
-                        errormsg = JSON.stringify(j);
+                .then(
+                    (response) => {
+                        // console.log(response.json().docs);
+                        this.$set('status', 'ok');
+                        this.$set('docs', response.json().docs);
+                    },
+                    (response) => {
+                        console.log('Failed');
+                        this.$set('status', 'error');
+                        this.$set('error', 'Unknown error');
+                        var j = response.json();
+                        var errormsg = j.error;
+                        if (!errormsg) {
+                            errormsg = JSON.stringify(j);
+                        }
+                        this.$set('status', 'error');
+                        this.$set('error', errormsg);
                     }
-                    this.$set('status', 'error');
-                    this.$set('error', errormsg);
-                });
+                );
             }
         },
         ready() {

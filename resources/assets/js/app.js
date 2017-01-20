@@ -18,6 +18,7 @@ require('./bootstrap');
 
 Vue.component('live-preview', require('./components/LivePreview.vue'));
 Vue.component('ace-editor', require('./components/AceEditor.vue'));
+Vue.component('rss-generator', require('./components/RssGenerator.vue'));
 
 Vue.prototype.trans = (key, params={}) => {
     return _.reduce(params, function(result, value, key) {

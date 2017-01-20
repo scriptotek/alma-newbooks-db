@@ -126,6 +126,17 @@ class Document extends Model
     ];
 
     /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @return \App\DocumentBuilder
+     */
+    public function newEloquentBuilder($query)
+    {
+        return new DocumentBuilder($query);
+    }
+
+    /**
      * Get the related changes.
      */
     public function changes()

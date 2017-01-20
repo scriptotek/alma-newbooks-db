@@ -107,9 +107,7 @@ class TemplatesController extends Controller
     {
         $template = Template::create([
             'name' => $request->get('name'),
-        ]);
-
-        $template->addVersionAndSave($request->get('body'));
+        ])->addVersionAndSave($request->get('body'));
 
         return redirect()->action('TemplatesController@show', $template->id)
             ->with('status', trans('templates.saved'));

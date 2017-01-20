@@ -40,29 +40,10 @@
 
             <div class="row">
 
-                <div class="col col-sm-4">
+                <div class="col col-sm-8">
                     <div class="form-group">
                         <label for="name">{{ trans('reports.name') }}</label>
                         <input type="text" name="name" id="name" value="{{ old('name') ?: $report->name }}" class="form-control">
-                    </div>
-                </div>
-
-                <div class="col col-sm-2">
-                    <div class="form-group">
-                        <label for="max_items">{{ trans('reports.max_items') }}</label>
-                        <input type="numeric" name="max_items" id="max_items" value="{{ old('max_items') ?: $report->max_items }}" class="form-control">
-                    </div>
-                </div>
-
-                <div class="col col-sm-3">
-                    <div class="form-group">
-                        <label for="template_id">{{ trans('reports.template_id') }}</label>
-                        @include('macros.selectbox', [
-                            'name' => 'template_id',
-                            'values' => $templates,
-                            'selected' => old('template_id') ?: $report->template_id,
-                            'class' => 'field selectpicker',
-                        ])
                     </div>
                 </div>
 

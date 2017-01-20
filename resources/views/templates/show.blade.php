@@ -23,16 +23,6 @@
 
             <ace-editor style="height:600px; position: relative;" readonly="true" id="body" mode="twig" value="{{ $template->currentVersion->body }}"></ace-editor>
 
-            <h3>{{ trans('templates.usage') }}</h3>
-
-            <ul>
-                @foreach ($template->reports as $report)
-                    <li>
-                        <a href="{{ action('ReportsController@show', $report->id) }}">{{ $report->name }}</a>
-                    </li>
-                @endforeach
-            </ul>
-
         </div>
     </div>
 

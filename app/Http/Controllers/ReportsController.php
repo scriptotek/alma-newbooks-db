@@ -63,7 +63,7 @@ class ReportsController extends Controller
         }
 
         try {
-            $docs = $report->documents;
+            $docs = $report->getDocumentBuilder()->received()->getUnique();
         } catch (QueryException $e) {
                 return response()
                 ->json(['error' => $e->getMessage()], 500);
@@ -82,14 +82,85 @@ class ReportsController extends Controller
      */
     public function show(Request $request, Report $report)
     {
-        $docs = $report->documents;
-        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
 
-        return view('reports.show', [
-            'report' => $report,
-            'docs' => $docs,
-            'groups' => $groups,
+        if (!$request->get('format')) {
+            return view('reports.show', [
+                'report' => $report,
+                'templates' => Template::orderBy('name', 'asc')->get(),
+            ]);
+        }
+
+        $limit = intval($request->get('limit', 30));
+
+        $builder = $report
+            ->getDocumentBuilder()
+            ->take($limit);
+
+        if (strtolower($request->get('received', 'true') == 'false')) {
+            $builder->nonReceived();
+        } else {
+            $builder->received();
+        }
+
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
+
+        if ($request->get('format') == 'rss') {
+            return $this->asRss($request, $report, $docs[null]);
+        }
+
+        return $this->asJson($request, $report, $docs, $groups);
+    }
+
+    public function asRss(Request $request, Report $report, $documents, $subtitle = null)
+    {
+
+        $template = Template::find($request->get('template'));
+        if (is_null($template)) {
+            return response('Ingen "template"-parameter ble angitt. Sjekk at du har lagt inn korrekt adresse', 400);
+        }
+
+        $feed = \Rss::feed('2.0', 'UTF-8');
+
+        $feed->channel([
+            'title'       => $report->name . (!is_null($subtitle) ? ' : ' . $subtitle : ''),
+            'description' => 'Tilvekstliste',
+            'link'        => $report->link,
+            'ttl'         => 43200,
         ]);
+
+        foreach ($documents as $doc) {
+            $feed->item([
+                'title'              => $doc->title,
+                'link'               => $doc->getPrimoLink(),
+                'description|cdata'  => $template->render($doc),
+                'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
+            ]);
+        }
+
+        return response($feed, 200)->header('Content-Type', 'text/xml');
+    }
+
+    public function asJson(Request $request, Report $report, $documents, $groups, $subtitle = null)
+    {
+        if ($request->has('template')) {
+            $template = Template::find($request->get('template'));
+        } else {
+            $template = $report->template;
+        }
+
+        $json = ['groups' => $groups];
+        foreach ($documents as $group => $docs) {
+            foreach ($docs as $doc) {
+                $json['documents'][$group][] = [
+                    'title'              => $doc->title,
+                    'link'               => $doc->getPrimoLink(),
+                    'description'        => $template->render($doc),
+                    'date'               => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} ? $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->toDateTimeString() : null,
+                ];
+            }
+        }
+
+        return response()->json($json);
     }
 
     /**
@@ -105,29 +176,42 @@ class ReportsController extends Controller
         list($year, $month) = explode('-', $month);
         $year = intval($year);
         $month = intval($month);
-
         $currentMonth = Carbon::create($year, $month, 1);
+        $subtitle = ucfirst($currentMonth->formatLocalized('%B %Y'));
 
-        $docs = $report->getDocumentsFromMonth($year, $month);
-        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
+        if (!$request->get('format')) {
+            $prevMonth = $currentMonth->copy()->subMonth();
+            $prevUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $prevMonth->format('Y-m')]);
+            $prevLink = "<a href=\"$prevUrl\">« " . $prevMonth->formatLocalized('%B %Y') . "</a>";
 
-        $prevMonth = $currentMonth->copy()->subMonth();
-        $prevUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $prevMonth->format('Y-m')]);
-        $prevLink = "<a href=\"$prevUrl\">« " . $prevMonth->formatLocalized('%B %Y') . "</a>";
+            $nextMonth = $currentMonth->copy()->addMonth();
+            $nextUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $nextMonth->format('Y-m')]);
+            $nextLink = "<a href=\"$nextUrl\">" . $nextMonth->formatLocalized('%B %Y') . " »</a>";
 
-        $nextMonth = $currentMonth->copy()->addMonth();
-        $nextUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $nextMonth->format('Y-m')]);
-        $nextLink = "<a href=\"$nextUrl\">" . $nextMonth->formatLocalized('%B %Y') . " »</a>";
+            return view('reports.filtered', [
+                'report' => $report,
+                'header' => $subtitle,
+                'prevLink' => $prevLink,
+                'nextLink' => $nextLink,
+                'templates' => Template::orderBy('name', 'asc')->get(),
+            ]);
+        }
 
-        return view('reports.filtered', [
-            'report' => $report,
-            'docs' => $docs,
-            'groups' => $groups,
-            'header' => ucfirst($currentMonth->formatLocalized('%B %Y')),
-            'prevLink' => $prevLink,
-            'nextLink' => $nextLink,
-            'groupOptions' => ['dewey', 'week'],
-        ]);
+        $template = Template::findOrFail($request->get('template'));
+
+        $builder = $report
+            ->getDocumentBuilder()
+            ->fromMonth($year, $month)
+            ->received()
+            ;
+
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
+
+        if ($request->get('format') == 'rss') {
+            return $this->asRss($request, $report, $docs[null], $subtitle);
+        }
+
+        return $this->asJson($request, $report, $docs, $groups);
     }
 
     /**
@@ -144,27 +228,41 @@ class ReportsController extends Controller
         $year = intval($year);
         $week = intval($week);
         $currentWeek = new Carbon(sprintf('%04dW%02d', $year, $week));
+        $subtitle = $currentWeek->formatLocalized('Uke %W, %Y');
 
-        $docs = $report->getDocumentsFromweek($year, $week);
-        list($docs, $groups) = $report->groupDocuments($docs, $request->get('group_by'));
+        if (!$request->get('format')) {
+            $prevWeek = $currentWeek->copy()->subWeek();
+            $prevUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $prevWeek->format('Y-W')]);
+            $prevLink = "<a href=\"$prevUrl\">« " . $prevWeek->formatLocalized('Uke %W') . "</a>";
 
-        $prevWeek = $currentWeek->copy()->subWeek();
-        $prevUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $prevWeek->format('Y-W')]);
-        $prevLink = "<a href=\"$prevUrl\">« " . $prevWeek->formatLocalized('Uke %W') . "</a>";
+            $nextWeek = $currentWeek->copy()->addWeek();
+            $nextUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $nextWeek->format('Y-W')]);
+            $nextLink = "<a href=\"$nextUrl\">" . $nextWeek->formatLocalized('Uke %W') . " »</a>";
 
-        $nextWeek = $currentWeek->copy()->addWeek();
-        $nextUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $nextWeek->format('Y-W')]);
-        $nextLink = "<a href=\"$nextUrl\">" . $nextWeek->formatLocalized('Uke %W') . " »</a>";
+            return view('reports.filtered', [
+                'report' => $report,
+                'header' => $subtitle,
+                'prevLink' => $prevLink,
+                'nextLink' => $nextLink,
+                'templates' => Template::orderBy('name', 'asc')->get(),
+            ]);
+        }
 
-        return view('reports.filtered', [
-            'report' => $report,
-            'docs' => $docs,
-            'groups' => $groups,
-            'header' => $currentWeek->formatLocalized('Uke %W, %Y'),
-            'prevLink' => $prevLink,
-            'nextLink' => $nextLink,
-            'groupOptions' => ['dewey'],
-        ]);
+        $template = Template::findOrFail($request->get('template'));
+
+        $builder = $report
+            ->getDocumentBuilder()
+            ->fromWeek($year, $week)
+            ->received()
+            ;
+
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
+
+        if ($request->get('format') == 'rss') {
+            return $this->asRss($request, $report, $docs[null], $subtitle);
+        }
+
+        return $this->asJson($request, $report, $docs, $groups);
     }
 
     /**
@@ -173,29 +271,11 @@ class ReportsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function rss($id)
+    public function rss(Request $request, $id)
     {
-        $report = Report::findOrFail($id);
-
-        $feed = \Rss::feed('2.0', 'UTF-8');
-
-        $feed->channel([
-            'title'       => $report->name,
-            'description' => 'Tilvekstliste',
-            'link'        => $report->link,
-            'ttl'         => 43200,
-        ]);
-
-        foreach ($report->documents->take($report->maxItems) as $doc) {
-            $feed->item([
-                'title'              => $doc->title,
-                'link'               => $doc->getPrimoLink(),
-                'description|cdata'  => $report->template->render($doc),
-                'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
-            ]);
-        }
-
-        return response($feed, 200)->header('Content-Type', 'text/xml');
+        return redirect()->action(
+            'ReportsController@show', ['id' => $id, 'format' => 'rss']
+        )->withInput();
     }
 
     /**
@@ -206,7 +286,7 @@ class ReportsController extends Controller
     public function create()
     {
         return view('reports.edit', [
-            'report' => new Report(['template_id' => 1]),
+            'report' => new Report(),
             'templates' => $this->allTemplates(),
             'fields' => Document::getFields(),
         ]);
@@ -240,8 +320,6 @@ class ReportsController extends Controller
         $report = Report::create([
             'name' => $request->get('name'),
             'querystring' => $request->get('querystring'),
-            'max_items' => $request->get('max_items'),
-            'template_id' => $request->get('template_id'),
             'created_by' => Auth::user()->id,
             'updated_by' => Auth::user()->id,
         ]);
@@ -263,8 +341,6 @@ class ReportsController extends Controller
 
         $report->name = $request->get('name');
         $report->querystring = $request->get('querystring');
-        $report->max_items = $request->get('max_items');
-        $report->template_id = $request->get('template_id');
         $report->updated_by = Auth::user()->id;
 
         $report->save();
