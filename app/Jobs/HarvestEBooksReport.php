@@ -34,6 +34,7 @@ class HarvestEBooksReport extends HarvestAnalytics
         'activation_date',
         'portfolio_creation_date',
         'library_name',
+        'additional_order_reference',
         Document::PO_ID,
         'po_creator',
         'material_type',

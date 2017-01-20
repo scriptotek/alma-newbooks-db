@@ -157,14 +157,15 @@ SELECT
    "E-Inventory"."Portfolio Activation Date"."Portfolio Activation Date" s_13,
    "E-Inventory"."Portfolio Creation Date"."Portfolio Creation Date" s_14,
    "E-Inventory"."Portfolio Library Unit"."Library Name" s_15,
-   "E-Inventory"."Portfolio PO Line"."PO Line Reference" s_16,
-   "E-Inventory"."Portfolio"."Creator" s_17,
-   "E-Inventory"."Portfolio"."Material Type" s_18,
-   "E-Inventory"."Portfolio"."Portfolio Id" s_19
+   "E-Inventory"."Portfolio PO Line"."Additional Order Reference" s_16,
+   "E-Inventory"."Portfolio PO Line"."PO Line Reference" s_17,
+   "E-Inventory"."Portfolio"."Creator" s_18,
+   "E-Inventory"."Portfolio"."Material Type" s_19,
+   "E-Inventory"."Portfolio"."Portfolio Id" s_20
 FROM "E-Inventory"
 WHERE
 (("Portfolio"."Material Type" = 'Book') AND ("Bibliographic Details"."Suppressed From Discovery" = 'No') AND ("Portfolio"."Life Cycle" = 'In Repository') AND ("Portfolio"."Availability" = 'Available'))
-ORDER BY 1, 14 DESC NULLS LAST, 18 ASC NULLS FIRST, 17 ASC NULLS FIRST, 15 ASC NULLS FIRST, 19 ASC NULLS FIRST, 7 ASC NULLS FIRST, 12 ASC NULLS FIRST, 13 ASC NULLS FIRST, 20 ASC NULLS FIRST, 4 ASC NULLS FIRST, 5 ASC NULLS FIRST, 6 ASC NULLS FIRST, 10 ASC NULLS FIRST, 9 ASC NULLS FIRST, 11 ASC NULLS FIRST, 2 ASC NULLS FIRST, 3 ASC NULLS FIRST, 16 ASC NULLS FIRST, 8 ASC NULLS FIRST
+ORDER BY 1, 14 DESC NULLS LAST, 19 ASC NULLS FIRST, 18 ASC NULLS FIRST, 15 ASC NULLS FIRST, 20 ASC NULLS FIRST, 7 ASC NULLS FIRST, 12 ASC NULLS FIRST, 13 ASC NULLS FIRST, 21 ASC NULLS FIRST, 4 ASC NULLS FIRST, 5 ASC NULLS FIRST, 6 ASC NULLS FIRST, 10 ASC NULLS FIRST, 9 ASC NULLS FIRST, 11 ASC NULLS FIRST, 2 ASC NULLS FIRST, 3 ASC NULLS FIRST, 16 ASC NULLS FIRST, 8 ASC NULLS FIRST, 17 ASC NULLS FIRST
 FETCH FIRST 500001 ROWS ONLY
 ```
 
