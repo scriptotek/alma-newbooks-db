@@ -20,7 +20,7 @@ return array(
 
     /*
     |--------------------------------------------------------------------------
-    | Network zone settings
+    | Network zone settings (not used for anything yet)
     |--------------------------------------------------------------------------
     */
     'nz' => [
@@ -38,5 +38,17 @@ return array(
     |
     */
     'employee_group' => env('ALMA_EMPLOYEE_GROUP'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Analytics reports
+    |--------------------------------------------------------------------------
+    */
+    'reports' => [
+        'new_electronic' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/new_electronic',
+        'new_print' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/new_physical',
+        'po_lines' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/po_lines',
+        'temporary_location' => '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/temporary_location',
+    ],
 
 );

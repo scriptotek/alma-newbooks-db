@@ -8,7 +8,7 @@ class HarvestPoLinesReport extends HarvestAnalytics
 {
     protected $createIfNotExists = true;
 
-    protected $path = '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/po_lines';
+    protected $path;
 
     protected $filter = '';
 
@@ -72,6 +72,7 @@ class HarvestPoLinesReport extends HarvestAnalytics
      */
     public function __construct($days)
     {
+        $this->path = config('alma.reports.po_lines');
         $this->filter = sprintf($this->filter, $days);
         $this->po_line_ids = [];
     }

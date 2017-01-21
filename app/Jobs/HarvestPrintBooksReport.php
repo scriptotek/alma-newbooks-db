@@ -8,7 +8,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
 {
     protected $createIfNotExists = true;
 
-    protected $path = '/shared/UIO,Universitetsbiblioteket/Reports/Nyhetslister/new_physical';
+    protected $path;
 
     protected $filter = '
         <sawx:expr op="greaterOrEqual" xsi:type="sawx:comparison"
@@ -73,6 +73,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
      */
     public function __construct($days)
     {
+        $this->path = config('alma.reports.new_print');
         $this->filter = sprintf($this->filter, $days);
     }
 }
