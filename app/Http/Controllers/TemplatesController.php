@@ -12,7 +12,7 @@ class TemplatesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'destroy']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'delete', 'destroy']]);
     }
 
     /**
@@ -23,7 +23,7 @@ class TemplatesController extends Controller
     public function index()
     {
         return view('templates.index', [
-            'templates' => Template::orderBy('name', 'asc')->get(),
+            'templates' => Template::withTrashed()->orderBy('name', 'asc')->get(),
         ]);
     }
 
@@ -129,5 +129,35 @@ class TemplatesController extends Controller
         return redirect()
             ->action('TemplatesController@show', $id)
             ->with('status', trans('templates.saved'));
+    }
+
+    /**
+     * Show the form for deleting the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete($id)
+    {
+        $template = Template::findOrFail($id);
+
+        return view('templates.delete', [
+            'template' => $template,
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        Template::destroy($id);
+
+        return redirect()
+            ->action('TemplatesController@index')
+            ->with('status', trans('templates.deleted'));
     }
 }

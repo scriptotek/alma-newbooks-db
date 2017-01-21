@@ -6,7 +6,7 @@ Alma Analytics nightly and stored in a local database.
 Lists are defined by SQL queries and presented as RSS lists using Twig
 templates.
 
-Login is handled with SAML.
+Login can be configured to use SAML or a local login system.
 
 A list from [ub-tilvekst.uio.no](https://ub-tilvekst.uio.no/):
 
@@ -30,9 +30,13 @@ In the base directory, run:
     $ npm run prod
 
 Copy `.env.example` to `.env` and edit it to include your database connection configuration
-and an Alma API key from [Developer Network](https://developers.exlibrisgroup.com) (If you
-use SAML login, it needs read access to both Analytics and Users, otherwise just Analytics.
-In the future, access to Bibs might also be needed). Then create the database tables using:
+and an Alma API key from [Developer Network](https://developers.exlibrisgroup.com) (It needs
+read access to both Analytics and Users. In the future, access to Bibs might also be needed).
+
+For more configuration options, see `config/alma.php`, `config/saml2_settings.php` and other
+files in the `config` directory.
+
+Then create the database tables using:
 
     $ php artisan migrate
 

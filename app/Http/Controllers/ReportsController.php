@@ -19,7 +19,7 @@ class ReportsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'destroy']]);
+        $this->middleware('auth', ['only' => ['create', 'edit', 'preview', 'store', 'update', 'delete', 'destroy']]);
     }
 
     /**
