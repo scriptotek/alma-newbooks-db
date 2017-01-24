@@ -17,7 +17,7 @@
 
     <div style="background:white;">
         <div class="container">
-            <vortex-rss-generator :show-limit="false" :show-received="false" urlbase="{{ URL::current() }}" :templates="{{ json_encode($templates) }}"></vortex-rss-generator>
+            <rss-generator :show-limit="false" :show-received="false" urlbase="{{ URL::current() }}" :templates="{{ json_encode($templates) }}"></rss-generator>
         </div>
     </div>
 
