@@ -27,6 +27,6 @@ return [
     'week' => 'week',
     'dewey' => 'Dewey',
     'please_note' => 'Please note',
-    'do_no_harm' => 'The form allows you to enter any SQL query. The service is based on trust and is not secured to withstand malicious queries. But don\'t worry if you\'r learning SQL, you won\'t just happen to write a malicious query by mistake without intending to so, so please go ahead and experiment! The system will let you know if the query is valid or not.',
+    'do_no_harm' => 'The form allows you to enter any SQL query. The service is based on trust and is not secured to withstand malicious queries. But don\'t worry if you\'re learning SQL, you won\'t just happen to write a malicious query by mistake without intending to so, so please go ahead and experiment! The system will let you know if the query is valid or not.',
 
 ];
