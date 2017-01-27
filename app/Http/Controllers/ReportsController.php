@@ -90,7 +90,7 @@ class ReportsController extends Controller
             ]);
         }
 
-        $limit = intval($request->get('limit', 30));
+        $limit = intval($request->get('limit', config('rss.limit')));
 
         $builder = $report
             ->getDocumentBuilder()
