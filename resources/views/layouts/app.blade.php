@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Tilvekstsdatabase - @yield('title')</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" >
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
