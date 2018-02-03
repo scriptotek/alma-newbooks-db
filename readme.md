@@ -1,6 +1,4 @@
-# alma-newbooks-db
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db?ref=badge_shield)
+# alma-newbooks-db &middot; [![License Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db?ref=badge_shield)
 
 A tool for creating lists of recent acquisitions from data harvested from
 Alma Analytics nightly and stored in a local database.
@@ -316,3 +314,7 @@ after you upgrade or make changes to the codebase:
     no indication what number belongs to the item at hand.
   * Editors? Where are they?? Not shown in Primo either 
     (https://bibsys-almaprimo.hosted.exlibrisgroup.com:443/UBO:default_scope:BIBSYS_ILS71535636290002201).
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db?ref=badge_large)
