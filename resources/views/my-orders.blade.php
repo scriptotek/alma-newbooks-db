@@ -11,6 +11,11 @@
                     <a href="{{ action('DocumentsController@show', $doc->id) }}">{{ $doc }}</a>
                 </div>
                 <div>
+                    Location: {{$doc->location_name or '- '}}.
+                    Dewey: {{ $doc->dewey_classification or '-' }}.
+                    Receiving note: {{ $doc->receiving_note or '-' }}.
+                </div>
+                <div>
                     @if ($doc->sent_date)
                         Order sent: {{ $doc->sent_date }}
                         {{ $doc->expected_receiving_date ? 'Expected receiving date: '. $doc->expected_receiving_date : '' }}
@@ -31,6 +36,11 @@
             <li>
                 <div>
                     <a href="{{ action('DocumentsController@show', $doc->id) }}">{{ $doc }}</a>
+                </div>
+                <div>
+                    Location: {{$doc->location_name or '- '}}.
+                    Dewey: {{ $doc->dewey_classification or '-' }}.
+                    Receiving note: {{ $doc->receiving_note or '-' }}.
                 </div>
                 <div>
                     Order sent: {{ $doc->sent_date }}
