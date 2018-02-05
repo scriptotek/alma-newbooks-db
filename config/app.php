@@ -172,6 +172,7 @@ return [
         Scriptotek\Alma\Providers\AlmaServiceProvider::class,
         Aacotroneo\Saml2\Saml2ServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
+        Laravel\Tinker\TinkerServiceProvider::class,
 
         /*
          * Application Service Providers...

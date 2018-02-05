@@ -49,7 +49,7 @@ To enable automatic harvesting every night, add
     * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
 
 to your crontab. This will check with the
-[Laravel task scheduler](https://laravel.com/docs/5.3/scheduling) every minute
+[Laravel task scheduler](https://laravel.com/docs/5.5/scheduling) every minute
 if there is something to, and exit right away if there isn't.
 
 ### Upgrading
@@ -257,7 +257,7 @@ you can set `QUEUE_DRIVER=database` and fire up a background worker process that
 processes the queue. The main benefit is that failed jobs are retried
 automatically. The main drawback is that you must ensure the worker process keeps
 running, so you need to configure something like supervisor. See the
-[Laravel docs](https://laravel.com/docs/5.3/queues). Here's an example
+[Laravel docs](https://laravel.com/docs/5.5/queues). Here's an example
 `.ini` file:
 
 ```
