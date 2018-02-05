@@ -3,12 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Document;
+use App\DocumentBuilder;
 use App\Http\Requests\DocumentsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class DocumentsController extends Controller
 {
+    protected $relations = [
+        'be' => 'begins with',
+        'co' => 'contains',
+        'nc' => 'does not contain',
+        'eq' => 'equals',
+        'ne' => 'not equals',
+        'nu' => 'is null',
+        'nn' => 'is not null',
+        'gt' => 'is greater than',
+        'gte' => 'is greater than or equal',
+        'lt' => 'is less than',
+        'lte' => 'is less than or equal',
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -27,17 +42,34 @@ class DocumentsController extends Controller
             $fields[$k] = $k;
         }
 
-        $docs = $request->queryBuilder()->paginate(100);
+        $data = $request->syncWithSession();
+
+        $docs = Document::query()
+            ->fromRequest($data)
+            ->paginate(100);
+
+        if (!count($data['statements'])) {
+            $data['statements'] = [
+                ['key' => 'author', 'rel' => 'be', 'val' => '', 'idx' => 1]
+            ];
+        }
 
         return view('documents.index', [
             'docs' => $docs,
             'fields' => $fields,
-            'relations' => $request->getRelations(),
-            'request' => $request,
-            'show' => $request->getShowFields(),
-            'sort' => $request->get('sort', $request->defaultSortField),
-            'sortDir' => $request->get('sortDir', $request->defaultSortDirection),
+            'relations' => $this->relations,
+            'statements' => $data['statements'],
+            'show' => $data['fields'],
+            'sort' => $data['sort'],
+            'sortDir' => $data['sortDir'],
         ]);
+    }
+
+    public function resetForm(DocumentsRequest $request)
+    {
+        $request->resetSession();
+
+        return redirect()->action('DocumentsController@index');
     }
 
     /**

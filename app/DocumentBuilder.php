@@ -181,4 +181,61 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
 
         return [$docs, $groups];
     }
+
+
+    protected function addStatement($key, $rel, $val)
+    {
+        if ($val) {
+            switch ($rel) {
+                case 'be':
+                    $this->where($key, 'ILIKE', $val . '%');
+                    break;
+                case 'co':
+                    $this->where($key, 'ILIKE', '%' . $val . '%');
+                    break;
+                case 'nc':
+                    $this->where($key, 'NOT ILIKE', '%' . $val . '%');
+                    break;
+                case 'eq':
+                    $this->where($key, '=', $val);
+                    break;
+                case 'ne':
+                    $this->where($key, '!=', $val);
+                    break;
+                case 'gt':
+                    $this->where($key, '>', $val);
+                    break;
+                case 'lt':
+                    $this->where($key, '<', $val);
+                    break;
+                case 'gte':
+                    $this->where($key, '>=', $val);
+                    break;
+                case 'lte':
+                    $this->where($key, '<=', $val);
+                    break;
+            }
+        } else {
+            switch ($rel) {
+                case 'nu':
+                    $this->whereNull($key);
+                    break;
+                case 'nn':
+                    $this->whereNotNull($key);
+                    break;
+            }
+        }
+    }
+
+    public function fromRequest($req)
+    {
+        $this->orderBy($req['sort'], $req['sortDir'])
+             ->whereNotNull($req['sort']);
+
+        foreach ($req['statements'] as $stmt) {
+            $this->addStatement($stmt['key'], $stmt['rel'], $stmt['val']);
+        }
+
+        return $this;
+    }
 }

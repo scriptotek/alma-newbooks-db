@@ -20,35 +20,34 @@
         <div class="panel-body">
 
             <div>
-                @foreach (range(1, 25) as $n)
-                    @if ($request->has('k' . $n) || $n == 1)
-                    <div class="form-group" id="inp{{ $n  }}">
+                @foreach ($statements as $stmt)
+                    <div class="form-group" id="inp{{ $stmt['idx']  }}">
                         <div class="col-sm-3">
                             @include('macros.selectbox', [
-                                'name' => 'k'.$n,
+                                'name' => 'k' . $stmt['idx'],
                                 'values' => $fields,
-                                'selected' => $request->get('k' . $n),
+                                'selected' => $stmt['key'],
                                 'class' => 'field selectpicker',
                                 'searchable' => true,
                             ])
                         </div>
                         <div class="col-sm-2">
                             @include('macros.selectbox', [
-                                'name' => 'r'.$n,
+                                'name' => 'r' . $stmt['idx'],
                                 'values' => $relations,
-                                'selected' => $request->get('r' . $n),
+                                'selected' => $stmt['rel'],
                                 'class' => 'relation selectpicker',
                             ])
                         </div>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control value" name="v{{ $n }}" value="{{ $request->get('v' . $n) }}">
+                            <input type="text" class="form-control value" name="v{{ $stmt['idx'] }}" value="{{ $stmt['val'] }}">
                         </div>
                     </div>
-                    @endif
                 @endforeach
             </div>
 
             <button type="button" id="addstmt" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> </button>
+            <a href="{{ action('DocumentsController@resetForm') }}" class="btn btn-warning">Reset</a>
 
         </div>
         <div class="panel-footer">
@@ -104,7 +103,7 @@
     </table>
 
     <div class="text-center">
-        {{ $docs->appends($request->all())->links() }}
+        {{ $docs->links() }}
     </div>
 
 @endsection

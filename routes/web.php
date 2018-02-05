@@ -17,6 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('documents/reset', 'DocumentsController@resetForm');
 Route::resource('documents', 'DocumentsController', ['only' => [
     'index', 'show'
 ]]);
