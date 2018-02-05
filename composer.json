@@ -2,7 +2,7 @@
     "name": "scriptotek/alma-newbooks-db",
     "description": "NewBooksDb.",
     "keywords": ["alma"],
-    "license": "MIT",
+    "license": "Apache-2.0",
     "type": "project",
     "minimum-stability": "dev",
     "prefer-stable": true,
