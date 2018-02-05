@@ -68,7 +68,9 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
         }
 
         foreach ($this->get() as $doc) {
-            $docs[$doc->{$fieldName}] = $doc;
+            if (!array_key_exists($doc->{$fieldName}, $docs)) {
+                $docs[$doc->{$fieldName}] = $doc;
+            }
         }
 
         return array_values($docs);
