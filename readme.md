@@ -1,5 +1,7 @@
 # alma-newbooks-db
 
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fscriptotek%2Falma-newbooks-db?ref=badge_shield)
+
 A tool for creating lists of recent acquisitions from data harvested from
 Alma Analytics nightly and stored in a local database.
 
