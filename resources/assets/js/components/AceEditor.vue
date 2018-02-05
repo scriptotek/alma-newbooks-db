@@ -1,14 +1,14 @@
 <template>
     <div>
 
-        <textarea name="{{ id }}" id="{{ id }}" class="form-control" v-model="value" style="display:none;"></textarea>
-        <div id="{{ id }}-editor" class="editor"></div>
+        <textarea :name="id" :id="id" class="form-control" v-model="value" style="display:none;"></textarea>
+        <div :id="id + '-editor'" class="editor"></div>
 
     </div>
 </template>
 <style type="text/css" media="screen">
     .editor {
-       position: absolute; /* Added */
+        position: absolute; /* Added */
         top: 0;
         right: 0;
         bottom: 0;
@@ -35,7 +35,7 @@
                 default: false
             }
         },
-        ready(){
+        mounted(){
             var bus = this.$parent;  // TODO: Temporary solution until I figure out how to setup and require an eventbus Vue object
 
 //            ace.require("brace/ext/language_tools");

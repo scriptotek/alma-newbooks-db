@@ -11,7 +11,8 @@
 
             <div class="panel-body">
                 <div v-for="doc in docs">
-                    <div><a href="/documents/{{ doc.mms_id }}">{{ doc.receiving_or_activation_date.split(' ')[0] }} - {{ doc.title }}</a> <small>{{ doc.repr }}</small></div>
+                    <div style="font-weight:bold;">{{ doc.receiving_or_activation_date.split('T')[0] }} : {{ doc.title }}</div>
+                    <small v-html="doc.repr"></small>
                 </div>
             </div>
         </div>
@@ -20,6 +21,8 @@
 </template>
 
 <script>
+    require('axios');
+
     export default {
         props: [
             'editor',
@@ -41,39 +44,40 @@
                 };
                 params[this.editor] = document.getElementById(this.editor).value;
                 if (params[this.editor].trim() == '') {
-                    this.$set('status', 'blank');
+                    this.status = 'blank';
                     return;
                 }
-                this.$set('status', 'pending');
-                this.$http.get('/' + this.endpoint + '/preview', {params: params})
+                this.status = 'pending';
+
+                axios.get('/' + this.endpoint + '/preview', {params: params})
                 .then(
                     (response) => {
                         // console.log(response.json().docs);
-                        this.$set('status', 'ok');
-                        this.$set('docs', response.json().docs);
+                        this.status = 'ok';
+                        this.docs = response.data.docs;
                     },
                     (response) => {
                         console.log('Failed');
-                        this.$set('status', 'error');
-                        this.$set('error', 'Unknown error');
-                        var j = response.json();
+                        this.status = 'error';
+                        this.error = 'Unknown error';
+                        var j = response.data;
                         var errormsg = j.error;
                         if (!errormsg) {
                             errormsg = JSON.stringify(j);
                         }
-                        this.$set('status', 'error');
-                        this.$set('error', errormsg);
+                        this.status = 'error';
+                        this.error = errormsg;
                     }
                 );
             }
         },
-        ready() {
+        mounted() {
             var bus = this.$parent;  // TODO: Temporary solution until I figure out how to setup and require an eventbus Vue object
 
             console.log('Component ready.');
 
             var timer = setTimeout(() => { this.preview() }, 1000);
-            this.$set('docs', []);
+            this.docs = [];
 
             bus.$on('changed', (el) => {
                 // console.log('it changed: ');

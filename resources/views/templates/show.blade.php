@@ -21,7 +21,7 @@
 
             <h2>{{ $template->name }}</h2>
 
-            <ace-editor style="height:600px; position: relative;" readonly="true" id="body" mode="twig" value="{{ $template->currentVersion->body }}"></ace-editor>
+            <ace-editor style="height: 600px; position: relative;" :readonly="true" id="body" mode="twig" value="{{ $template->currentVersion->body }}"></ace-editor>
 
         </div>
     </div>
