@@ -140,7 +140,7 @@
         <div id="contact-info">
           <div class="phone-fax-email">
             <span class="vrtx-label">Contact information</span>
-            <span class="email">E-mail: someone@ub.uio.no</span>
+            <span class="email">E-mail: d.m.heggo@ub.uio.no</span>
             <!-- <span class="tel">Phone: 99 99 99 99</span>-->
           </div>
         </div>
