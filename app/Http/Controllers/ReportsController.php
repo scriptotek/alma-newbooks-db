@@ -42,7 +42,7 @@ class ReportsController extends Controller
     public function index()
     {
         return view('reports.index', [
-            'reports' => Report::get(),
+            'reports' => Report::orderBy('name')->get(),
         ]);
     }
 
