@@ -78,7 +78,7 @@ class TemplatesController extends Controller
         $body = $request->get('body');
 
         try {
-            $docs = map(Document::take(10)->get(), function($doc) use ($template, $body) {
+            $docs = map(Document::whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE)->take(10)->get(), function($doc) use ($template, $body) {
                 return [
                     'title' => $doc->title,
                     'receiving_or_activation_date' => $doc->receiving_or_activation_date,
