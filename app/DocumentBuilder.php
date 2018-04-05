@@ -62,14 +62,18 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
         $docs = [];
         $fieldName = array_get($options, 'fieldName', Document::MMS_ID);
 
-        $limit = array_get($options, 'limit');
-        if (!is_null($limit)) {
-            $this->take($limit);
-        }
+        $limit = array_get($options, 'limit') ?: $this->getQuery()->limit;
 
+        $this->take($limit * 4);  // quick hack. Proper grouping is quite difficult here:
+        // - `distinct on (mms_id) *` does not work since we sort on receving_date
+        // - `group by mms_id` does not work for the same reason
+
+        $n = 0;
         foreach ($this->get() as $doc) {
             if (!array_key_exists($doc->{$fieldName}, $docs)) {
                 $docs[$doc->{$fieldName}] = $doc;
+                $n++;
+                if ($n >= $limit) break;
             }
         }
 

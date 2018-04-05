@@ -207,6 +207,7 @@ class ReportsController extends Controller
             ->getDocumentBuilder()
             ->fromMonth($year, $month)
             ->received()
+            ->take(1000) // a "very high number"[TM]
             ;
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
@@ -258,6 +259,7 @@ class ReportsController extends Controller
             ->getDocumentBuilder()
             ->fromWeek($year, $week)
             ->received()
+            ->take(1000) // a "very high number"[TM]
             ;
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
