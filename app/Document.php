@@ -205,4 +205,17 @@ class Document extends Model
 
         return '<a href="' . $url . '">' . $this->{$dateField} . '</a>';
     }
+
+    public function toArrayUsingTemplate(Template $template = null)
+    {
+        if (is_null($template)) {
+            return $this->toArray();
+        }
+        return [
+            'title'              => $this->title,
+            'link'               => $this->getPrimoLink(),
+            'description'        => $template->render($this),
+            'date'               => $this->{Document::RECEIVING_OR_ACTIVATION_DATE} ? $this->{Document::RECEIVING_OR_ACTIVATION_DATE}->toDateTimeString() : null,
+        ];
+    }
 }

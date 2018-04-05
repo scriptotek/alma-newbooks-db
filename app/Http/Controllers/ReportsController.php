@@ -82,7 +82,6 @@ class ReportsController extends Controller
      */
     public function show(Request $request, Report $report)
     {
-
         if (!$request->get('format')) {
             return view('reports.show', [
                 'report' => $report,
@@ -102,11 +101,14 @@ class ReportsController extends Controller
             $builder->received();
         }
 
-        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
-
         if ($request->get('format') == 'rss') {
-            return $this->asRss($request, $report, $docs[null]);
+            return $this->asRss($request, $report, $builder->getUnique());
         }
+
+        if (!$request->get('group_by')) {
+            return $this->asJson($request, $report, $builder->getUnique());
+        }
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
 
         return $this->asJson($request, $report, $docs, $groups);
     }
@@ -140,7 +142,7 @@ class ReportsController extends Controller
         return response($feed, 200)->header('Content-Type', 'text/xml');
     }
 
-    public function asJson(Request $request, Report $report, $documents, $groups, $subtitle = null)
+    public function asJson(Request $request, Report $report, $documents, $groups = null, $subtitle = null)
     {
         if ($request->has('template')) {
             $template = Template::find($request->get('template'));
@@ -148,15 +150,17 @@ class ReportsController extends Controller
             $template = $report->template;
         }
 
-        $json = ['groups' => $groups];
-        foreach ($documents as $group => $docs) {
-            foreach ($docs as $doc) {
-                $json['documents'][$group][] = [
-                    'title'              => $doc->title,
-                    'link'               => $doc->getPrimoLink(),
-                    'description'        => $template->render($doc),
-                    'date'               => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} ? $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->toDateTimeString() : null,
-                ];
+        if (is_null($groups)) {
+            $json = [];
+            foreach ($documents as $doc) {
+                $json[] = $doc->toArrayUsingTemplate($template);
+            }
+        } else {
+            $json = ['groups' => $groups];
+            foreach ($documents as $group => $docs) {
+                foreach ($docs as $doc) {
+                    $json['documents'][$group][] = $doc->toArrayUsingTemplate();
+                }
             }
         }
 
