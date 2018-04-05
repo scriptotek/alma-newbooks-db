@@ -37,15 +37,17 @@
             <a :href="url + '.rss?template=' + template + (received ? '' : '&received=false')">{{ url }}.rss?template={{ template }}{{ received ? '' : '&received=false' }}</a>
         </div>
 
-        <div class="form-group">
-            <label>{{ trans('reports.group_by') }}:</label>
-            <b-form-select
-                name="groupBy"
-                :value="groupBy"
-                :options="groupByOptions"
-                v-on:change="update"
-            ></b-form-select>
-        </div>
+        <form class="form-inline">
+            <div class="form-group">
+                <label>{{ trans('reports.group_by') }}:</label>
+                <b-form-select
+                    name="groupBy"
+                    v-model="groupBy"
+                    :options="groupByOptions"
+                    v-on:change="update"
+                ></b-form-select>
+            </div>
+        </form>
 
         <p v-if="error" class="text-danger">{{ error }}</p>
 
@@ -123,7 +125,6 @@
         methods: {
             update() {
                 Vue.nextTick(() => {
-
                     let url = this.urlbase +'?group_by=' + this.groupBy + '&template=' + this.template + '&limit=' + this.limit;
                     window.history.replaceState(null, null, url);
 
