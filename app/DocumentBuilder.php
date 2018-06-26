@@ -94,6 +94,18 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
         return $docs;
     }
 
+    // Redefine orderBy to *replace* the current order, not add to the current sort keys.
+    public function orderBy($column, $direction = 'asc')
+    {
+        // Clear sort order first
+        $this->getQuery()->orders = [];
+
+        // Set sort order
+        $this->getQuery()->orderBy($column, $direction);
+
+        return $this;
+    }
+
     public function groupedByMonth($field=Document::RECEIVING_OR_ACTIVATION_DATE)
     {
         $docs = [];

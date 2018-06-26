@@ -21,6 +21,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
     protected $headers = [
         'author',
         'bibliographic_level',
+        'bib_creation_date',
         'dewey_classification_top_line',
         'dewey_classification',
         'edition',

@@ -15,7 +15,16 @@ class Document extends Model
 
     const PO_CREATOR = 'po_creator';
 
-    protected $appends = ['cover'];
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'cover',
+        'primo_link',
+        'self_link',
+    ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -30,6 +39,7 @@ class Document extends Model
         // 'item_creation_date',        // date
         'receiving_date',               // datetime
         'po_creation_date',             // datetime
+        'bib_creation_date',            // datetime
         'bib_modification_date',        // datetime
         // 'activation_date',           // date
         //'portfolio_creation_date',    // date
@@ -81,6 +91,7 @@ class Document extends Model
 
         // Bibliographic data
         self::MMS_ID,
+        'bib_creation_date',
         'bib_modification_date',
         'title',
         'edition',
@@ -95,8 +106,6 @@ class Document extends Model
         'isbn',
         'base_status',
         'material_type',
-        'biblio_modified',
-        'biblio_modifiedby',
 
         // Physical holding
         'holding_id',
@@ -161,11 +170,16 @@ class Document extends Model
         return $fields;
     }
 
-    public function getPrimoLink()
+    public function getPrimoLinkAttribute()
     {
         $primoTpl = 'http://bibsys-almaprimo.hosted.exlibrisgroup.com/primo_library/libweb/action/dlSearch.do?institution=UBO&vid=UBO&tab=default_tab&query=any,contains,{mms_id}';
 
         return str_replace('{mms_id}', $this->{self::MMS_ID}, $primoTpl);
+    }
+
+    public function getSelfLinkAttribute()
+    {
+        return action('DocumentsController@show', ['id' => $this->id]);
     }
 
     public function getDateString($field)
@@ -180,7 +194,7 @@ class Document extends Model
 
     public function getComponentsAttribute()
     {
-        return Document::where('mms_id', '=', $this->{self::MMS_ID})->get();
+        return Document::where('mms_id', '=', $this->{self::MMS_ID})->orderBy('item_creation_date')->get();
     }
 
     public function link_to_date($dateField)
@@ -213,7 +227,7 @@ class Document extends Model
         }
         return [
             'title'              => $this->title,
-            'link'               => $this->getPrimoLink(),
+            'link'               => $this->getPrimoLinkAttribute(),
             'description'        => $template->render($this),
             'date'               => $this->{Document::RECEIVING_OR_ACTIVATION_DATE} ? $this->{Document::RECEIVING_OR_ACTIVATION_DATE}->toDateTimeString() : null,
         ];

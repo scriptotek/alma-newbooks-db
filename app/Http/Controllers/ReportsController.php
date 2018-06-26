@@ -63,7 +63,9 @@ class ReportsController extends Controller
         }
 
         try {
-            $docs = $report->getDocumentBuilder()->received()->getUnique();
+            $docs = $report->getDocumentBuilder()->received()->getUnique([
+                'limit' => intval($request->max_items),
+            ]);
         } catch (QueryException $e) {
                 return response()
                 ->json(['error' => $e->getMessage()], 500);
@@ -133,7 +135,7 @@ class ReportsController extends Controller
         foreach ($documents as $doc) {
             $feed->item([
                 'title'              => $doc->title,
-                'link'               => $doc->getPrimoLink(),
+                'link'               => $doc->primo_link,
                 'description|cdata'  => $template->render($doc),
                 'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
             ]);
@@ -147,7 +149,7 @@ class ReportsController extends Controller
         if ($request->has('template')) {
             $template = Template::find($request->get('template'));
         } else {
-            $template = $report->template;
+            $template = null;
         }
 
         if (is_null($groups)) {
@@ -159,7 +161,7 @@ class ReportsController extends Controller
             $json = ['groups' => $groups];
             foreach ($documents as $group => $docs) {
                 foreach ($docs as $doc) {
-                    $json['documents'][$group][] = $doc->toArrayUsingTemplate();
+                    $json['documents'][$group][] = $doc->toArrayUsingTemplate($template);
                 }
             }
         }

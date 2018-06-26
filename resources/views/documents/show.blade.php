@@ -3,15 +3,16 @@
 @section('content')
 
 	<div class="container" style="background:white;">
-		<h2>{{ $doc->title }}</h2>
+		<h2>{{ $doc->barcode }}</h2>
 
-		<h3>Summary</h3>
+		<p>
+			<a href="{{ $doc->primo_link }}">Vis i Primo</a>
+		</p>
 
 		<p>
 			MMS ID:
-			<a href="https://bibsys-almaprimo.hosted.exlibrisgroup.com/primo_library/libweb/action/dlSearch.do?institution=UBO&amp;vid=UBO&search_scope=default_scope&amp;query=any,contains,{{ $doc->{App\Document::MMS_ID} }}">{{ $doc->{App\Document::MMS_ID} }}</a>
-			<!--<a href="https://services.bibsys.no/services/html/marcPresentation.html?{App\Document::MMS_ID}={{ $doc->{App\Document::MMS_ID} }}">{{ $doc->{App\Document::MMS_ID} }}</a>
-			(todo: konvertere til nz-id..)-->
+			<a href="{{ action('DocumentsController@index', ['k1' => 'mms_id', 'r1' => 'eq', 'v1' => $doc->mms_id]) }}">{{ $doc->{App\Document::MMS_ID} }}</a>. ISBN: {{ $doc->isbn }}.
+			Tittel: {{ $doc->title }}.
 		</p>
 
 		<p>
@@ -32,70 +33,91 @@
 
 		</p>
 
+		@if ($doc->bib_creation_date)
+			IZ bib record created:
+			{!! $doc->link_to_date('bib_creation_date') !!}.
+		@endif
+
+		<h4>All items with this MMS ID</h4>
+
 		<ul>
 		@foreach($doc->components as $component)
 			<li>
-				@if ($component->item_id)
-					{{ $component->barcode }} / {{ $component->item_id }}
-				@else
-					Item not received or activated yet
+				<a href="{{ action('DocumentsController@show', $component->id) }}">
+					@if ($component->barcode)
+						{{ $component->barcode }}
+					@elseif ($component->portfolio_id)
+						{{ $component->portfolio_id }}
+					@else
+						(item not created yet)
+					@endif
+				</a>
+				@if ($component->process_type)
+					Process type: <em>{{ $component->process_type }}</em>.
 				@endif
-
-				<div>
 				@if ($component->library_name)
-					Permanent location: <a href="{{ action('DocumentsController@index', ['k1' => 'library_name', 'r1' => 'eq', 'v1' => $component->library_name]) }}">{{ $component->library_name }}</a>
+					@ <a href="{{ action('DocumentsController@index', ['k1' => 'library_name', 'r1' => 'eq', 'v1' => $component->library_name]) }}">{{ $component->library_name }}</a>
 				@endif
 				@if ($component->location_name)
 					<a href="{{ action('DocumentsController@index', ['k1' => 'location_name', 'r1' => 'eq', 'v1' => $component->location_name]) }}">{{ $component->location_name }}</a>
 				@endif
 				{{ $component->permanent_call_number }}
 			<!-- Ebooks -->
-				{{ $component->collection_name }}
-				</div>
-
+				@if ($component->collection_name)
+					/ Collection: <a href="{{ action('DocumentsController@index', ['k1' => 'collection_name', 'r1' => 'eq', 'v1' => $component->collection_name]) }}">{{ $component->collection_name }}</a>.
+				@endif
 				@if ($component->temporary_location_name)
-					<div>
-						Temporary location:
-						<a href="{{ action('DocumentsController@index', ['k1' => 'temporary_location_name', 'r1' => 'eq', 'v1' => $component->temporary_location_name]) }}">{{ $component->temporary_location_name }}</a>
-					</div>
+					Temporary location:
+					<a href="{{ action('DocumentsController@index', ['k1' => 'temporary_location_name', 'r1' => 'eq', 'v1' => $component->temporary_location_name]) }}">{{ $component->temporary_location_name }}</a>
 				@endif
 
 				<div>
-				Acquisition:
 				@if ($component->acquisition_method == 'PURCHASE')
-					Order {{ $component->{App\Document::PO_ID} }} created {{ $component->getDateString('po_creation_date') }}
+					Purchase order {{ $component->{App\Document::PO_ID} }} created {{ $component->getDateString('po_creation_date') }}
 					@if ($component->po_creator)
 						by {{ $component->po_creator }}
 					@endif
 					and sent
 					{!! $component->link_to_date('sent_date') !!}.
 				@else
-					{{ $component->{App\Document::PO_ID} }}:
-					{{$component->acquisition_method}}.
+					{{$component->acquisition_method}}
+					{{ $component->{App\Document::PO_ID} }}.
 				@endif
 
+				</div>
+
+
+				@if ($component->item_creation_date)
+					Item created:
+					{!! $component->link_to_date('item_creation_date') !!}
+					({{ \Carbon\Carbon::parse($component->item_creation_date)->diffInDays($doc->bib_creation_date) }} days after bib record was created).<br>
+				@endif
 				@if ($component->receiving_date)
 					Item received:
-					{!! $component->link_to_date(App\Document::RECEIVING_OR_ACTIVATION_DATE) !!}
+					{!! $component->link_to_date('receiving_date') !!}
+					({{ $component->{'receiving_date'}->diffInDays(\Carbon\Carbon::parse($component->item_creation_date)) }} days after item record was created).<br>
 				@endif
-
 				@if ($component->activation_date)
 					E-book activated:
-					{!! $component->link_to_date(App\Document::RECEIVING_OR_ACTIVATION_DATE) !!}
+					{!! $component->link_to_date('activation_date') !!}.<br>
 				@endif
-				</div>
-				@if ($component->process_type)
-				<div>
-					Process type: {{ $component->process_type }}
-				</div>
+				@if ($component->cataloged_at)
+					Call number assigned:
+					{!! $component->link_to_date('cataloged_at') !!}
+					({{ \Carbon\Carbon::parse($component->{'cataloged_at'})->diffInDays($component->receiving_or_activation_date) }} days after item record was received or activated).<br>
+				@endif
+				@if ($component->ready_at)
+					<abbr title="Date when process type first changed from 'In Process' to something else">Item ready</abbr>:
+					{!! $component->link_to_date('ready_at') !!}
+					({{ \Carbon\Carbon::parse($component->{'ready_at'})->diffInDays($component->receiving_or_activation_date) }} days after item record was received or activated).<br>
 				@endif
 			</li>
 		@endforeach
 		</ul>
 
-		<h3>History</h3>
+		<h4>History for this item</h4>
 		<ul>
-			@foreach ($doc->changes as $change)
+			@foreach ($doc->changes()->orderBy('created_at', 'desc')->get() as $change)
 				<li>
 					{{ $change->created_at->subDay()->toDateString() }}:
 					<span style="color:#888; font-weight: 600;">{{ $change->key }}</span>
@@ -111,7 +133,7 @@
 			@endforeach
 		</ul>
 
-		<h3>Details</h3>
+		<h4>Details</h4>
 
 		<table class="table">
 			@foreach (App\Document::getFields() as $field)

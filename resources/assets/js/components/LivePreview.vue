@@ -11,7 +11,11 @@
 
             <div class="panel-body">
                 <div v-for="doc in docs">
-                    <div style="font-weight:bold;">{{ doc.receiving_or_activation_date.split('T')[0] }} : {{ doc.title }}</div>
+                    <div>
+                        <span title="Mottaksdatao">{{ doc.receiving_or_activation_date.split(' ')[0] }}</span>
+                        :
+                        <a :href="doc.self_link">{{ doc.barcode }}</a> {{ doc.title }} ({{ doc.publication_date }}, {{ doc.edition}})
+                    </div>
                     <small v-html="doc.repr"></small>
                 </div>
             </div>
