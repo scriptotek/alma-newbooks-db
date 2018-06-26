@@ -37,8 +37,11 @@ class AnalyticsReportImporter
     {
         // Publication year: "[2012]" -> "2012", "c2012" -> "2012", etc.
         if (isset($row['publication_date'])) {
-            if (preg_match('/[0-9]{3,4}/', $row['publication_date'], $matches)) {
-                $row['publication_date'] = $matches[0];
+            if (preg_match('/[0-9]{4}/', $row['publication_date'], $matches)) {
+                $row['publication_date'] = intval($matches[0]);
+            } else {
+                \Log::warning("Ignoring invalid publication date '" . $row['publication_date'] . "' for '" . $row[Document::PO_ID] . "'");
+                $row['publication_date'] = null;
             }
         }
 
@@ -138,6 +141,18 @@ class AnalyticsReportImporter
             $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} = $row['activation_date'];
         } elseif (isset($row['receiving_date'])) {
             $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} = $row['receiving_date'];
+        }
+
+        // Set item/portfolio id and creation_date
+        if (isset($row['portfolio_id'])) {
+            $doc->item_or_portfolio_id = $row['portfolio_id'];
+        } elseif (isset($row['item_id'])) {
+            $doc->item_or_portfolio_id = $row['item_id'];
+        }
+        if (isset($row['portfolio_creation_date'])) {
+            $doc->item_or_portfolio_creation_date = $row['portfolio_creation_date'];
+        } elseif (isset($row['item_creation_date'])) {
+            $doc->item_or_portfolio_creation_date = $row['item_creation_date'];
         }
 
         return $doc;

@@ -54,9 +54,20 @@ class Report extends Model
      */
     public function getDocumentBuilder()
     {
+        $querystring = $this->querystring;
+
+        // Expand %%only_first%% template
+        $querystring = str_replace('%%only_first%%', '
+            AND item_or_portfolio_id IN (
+                SELECT DISTINCT ON (mms_id) item_or_portfolio_id
+                FROM tilvekst_documents
+                WHERE ' . str_replace('%%only_first%%', '', $querystring) .
+                ' ORDER BY mms_id, item_or_portfolio_creation_date
+            )', $querystring);
+
         return Document::query()
-            ->where(function($query) {
-                return $query->whereRaw($this->querystring);
+            ->where(function($query) use ($querystring) {
+                return $query->whereRaw($querystring);
             });
     }
 

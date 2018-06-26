@@ -88,7 +88,7 @@ class Template extends Model
         $version = TemplateVersion::create([
             'template_id'       => $this->id,
             'parent_version_id' => $parent_version_id,
-            'body'              => $body || '',
+            'body'              => $body ?: '',
             'created_by'        => $created_by,
             'created_at'        => Carbon::now(),
         ]);

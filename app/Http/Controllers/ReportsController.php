@@ -63,7 +63,9 @@ class ReportsController extends Controller
         }
 
         try {
-            $docs = $report->getDocumentBuilder()->received()->getUnique();
+            $docs = $report->getDocumentBuilder()->received()->getUnique([
+                'limit' => intval($request->max_items),
+            ]);
         } catch (QueryException $e) {
                 return response()
                 ->json(['error' => $e->getMessage()], 500);
@@ -82,7 +84,6 @@ class ReportsController extends Controller
      */
     public function show(Request $request, Report $report)
     {
-
         if (!$request->get('format')) {
             return view('reports.show', [
                 'report' => $report,
@@ -102,11 +103,14 @@ class ReportsController extends Controller
             $builder->received();
         }
 
-        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
-
         if ($request->get('format') == 'rss') {
-            return $this->asRss($request, $report, $docs[null]);
+            return $this->asRss($request, $report, $builder->getUnique());
         }
+
+        if (!$request->get('group_by')) {
+            return $this->asJson($request, $report, $builder->getUnique());
+        }
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
 
         return $this->asJson($request, $report, $docs, $groups);
     }
@@ -131,7 +135,7 @@ class ReportsController extends Controller
         foreach ($documents as $doc) {
             $feed->item([
                 'title'              => $doc->title,
-                'link'               => $doc->getPrimoLink(),
+                'link'               => $doc->primo_link,
                 'description|cdata'  => $template->render($doc),
                 'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
             ]);
@@ -140,23 +144,25 @@ class ReportsController extends Controller
         return response($feed, 200)->header('Content-Type', 'text/xml');
     }
 
-    public function asJson(Request $request, Report $report, $documents, $groups, $subtitle = null)
+    public function asJson(Request $request, Report $report, $documents, $groups = null, $subtitle = null)
     {
         if ($request->has('template')) {
             $template = Template::find($request->get('template'));
         } else {
-            $template = $report->template;
+            $template = null;
         }
 
-        $json = ['groups' => $groups];
-        foreach ($documents as $group => $docs) {
-            foreach ($docs as $doc) {
-                $json['documents'][$group][] = [
-                    'title'              => $doc->title,
-                    'link'               => $doc->getPrimoLink(),
-                    'description'        => $template->render($doc),
-                    'date'               => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE} ? $doc->{Document::RECEIVING_OR_ACTIVATION_DATE}->toDateTimeString() : null,
-                ];
+        if (is_null($groups)) {
+            $json = [];
+            foreach ($documents as $doc) {
+                $json[] = $doc->toArrayUsingTemplate($template);
+            }
+        } else {
+            $json = ['groups' => $groups];
+            foreach ($documents as $group => $docs) {
+                foreach ($docs as $doc) {
+                    $json['documents'][$group][] = $doc->toArrayUsingTemplate($template);
+                }
             }
         }
 
@@ -203,6 +209,7 @@ class ReportsController extends Controller
             ->getDocumentBuilder()
             ->fromMonth($year, $month)
             ->received()
+            ->take(1000) // a "very high number"[TM]
             ;
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
@@ -254,6 +261,7 @@ class ReportsController extends Controller
             ->getDocumentBuilder()
             ->fromWeek($year, $week)
             ->received()
+            ->take(1000) // a "very high number"[TM]
             ;
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));

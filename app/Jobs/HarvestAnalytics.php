@@ -48,6 +48,13 @@ class HarvestAnalytics implements ShouldQueue
             // We use this as a measure of the cataloging date.
             $doc->cataloged_at = Carbon::now()->subDay();
         }
+
+        if ($key == 'process_type' && is_null($doc->ready_at)) {
+            // Process type changed yesterday.
+            // We use this as a measure of the ready date.
+            $doc->ready_at = Carbon::now()->subDay();
+        }
+
     }
 
     protected function saved(Document $doc)

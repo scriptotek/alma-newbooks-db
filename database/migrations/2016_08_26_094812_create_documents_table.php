@@ -51,7 +51,7 @@ class CreateDocumentsTable extends Migration
             $table->text('edition')->nullable();
             $table->text('author')->nullable();
             $table->text('publisher')->nullable();
-            $table->text('publication_date')->nullable();
+            $table->smallInteger('publication_date')->unsigned()->nullable();
             $table->text('publication_place')->nullable();
             $table->text('series')->nullable();
             $table->text('bibliographic_level')->nullable();
