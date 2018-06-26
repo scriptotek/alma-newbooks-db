@@ -163,7 +163,7 @@ class Document extends Model
 
     public function getPrimoLink()
     {
-        $primoTpl = 'http://bibsys-almaprimo.hosted.exlibrisgroup.com/primo_library/libweb/action/dlSearch.do?institution=UBO&vid=UBO&tab=default_tab&query=any,contains,{mms_id}';
+        $primoTpl = 'https://bibsys-almaprimo.hosted.exlibrisgroup.com/primo-explore/search?tab=default_tab&sortby=rank&vid=UIO&lang=no_NO&query=any,contains,{mms_id}';
 
         return str_replace('{mms_id}', $this->{self::MMS_ID}, $primoTpl);
     }
