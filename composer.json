@@ -26,6 +26,7 @@
         "league/csv": "^8.1",
         "lstrojny/functional-php": "^1.4",
         "mayconbordin/rss-l5": "~1.1",
+        "predis/predis": "^1.1",
         "scriptotek/alma-client": "^0.5.1",
         "twig/twig": "^1.30",
         "voku/portable-utf8": "^3.0"
