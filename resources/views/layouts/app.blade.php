@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico" >
 
     <!-- Styles -->
-    <link href="/css/app.css" rel="stylesheet">
+    <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.min.css">
 
     <link href="/css/uio-app-top-bottom.css" type="text/css" rel="stylesheet" media="screen, print" />
@@ -154,7 +154,7 @@
 
 
     <!-- Scripts -->
-    <script src="/js/app.js"></script>
+    <script src="{{ mix('/js/app.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

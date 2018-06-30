@@ -10,3 +10,4 @@
 /composer.lock
 storage/debugbar
 yarn.lock
+/public/mix-manifest.json
