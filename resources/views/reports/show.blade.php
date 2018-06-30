@@ -41,7 +41,9 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <rss-generator
-                        urlbase="{{ route('reports.show', $report->id) }}"
+                        view-url="{{ $viewUrl }}"
+                        rss-url="{{ $rssUrl }}"
+                        json-url="{{ $jsonUrl }}"
                         :templates="{{ json_encode($templates) }}"
                     ></rss-generator>
                 </div>

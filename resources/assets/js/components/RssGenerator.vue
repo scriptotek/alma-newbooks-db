@@ -32,9 +32,9 @@
         </form>
 
 
-        <pre v-show="snippetTemplate == 1"><code>${include:feed url=[{{ url }}.rss?template={{ template }}{{ received ? '' : '&received=false' }}] display-feed-title=[false] item-description=[true] item-picture=[true] published-date=[none]{{ showLimit ? ' max-messages=[' + limit + ']' : '' }} allow-markup=[true] all-messages-link=[false] if-empty-message=[Ingen bøker]}</code></pre>
+        <pre v-show="snippetTemplate == 1"><code>${include:feed url=[{{ url }}?template={{ template }}{{ received ? '' : '&received=false' }}] display-feed-title=[false] item-description=[true] item-picture=[true] published-date=[none]{{ showLimit ? ' max-messages=[' + limit + ']' : '' }} allow-markup=[true] all-messages-link=[false] if-empty-message=[Ingen bøker]}</code></pre>
         <div v-show="snippetTemplate == 2" class="well">
-            <a :href="url + '.rss?template=' + template + (received ? '' : '&received=false')">{{ url }}.rss?template={{ template }}{{ received ? '' : '&received=false' }}</a>
+            <a :href="url + '?template=' + template + (received ? '' : '&received=false')">{{ url }}?template={{ template }}{{ received ? '' : '&received=false' }}</a>
         </div>
 
         <form class="form-inline">
@@ -74,7 +74,13 @@
 
     export default{
         props: {
-            urlbase: {
+            viewUrl: {
+                type: String
+            },
+            rssUrl: {
+                type: String
+            },
+            jsonUrl: {
                 type: String
             },
             templates: {
@@ -113,7 +119,7 @@
         },
         computed: {
             url () {
-                return this.urlbase
+                return this.rssUrl;
             },
             templatesOptions () {
                 if (!this.templates) return [];
@@ -125,7 +131,7 @@
         methods: {
             update() {
                 Vue.nextTick(() => {
-                    let url = this.urlbase +'?group_by=' + this.groupBy + '&template=' + this.template + '&limit=' + this.limit;
+                    let url = this.viewUrl +'?group_by=' + this.groupBy + '&template=' + this.template + '&limit=' + this.limit;
                     window.history.replaceState(null, null, url);
 
                     let params = {
@@ -136,7 +142,7 @@
                     };
                     console.log(params);
                     this.error = null;
-                    axios.get(this.urlbase + '.json', {params: params})
+                    axios.get(this.jsonUrl, {params: params})
                     .then(
                         (response) => {
                             this.documents = response.data.documents;

@@ -17,7 +17,14 @@
 
     <div style="background:white;">
         <div class="container">
-            <rss-generator :show-limit="false" :show-received="false" urlbase="{{ URL::current() }}" :templates="{{ json_encode($templates) }}"></rss-generator>
+            <rss-generator
+                view-url="{{ $viewUrl }}"
+                rss-url="{{ $rssUrl }}"
+                json-url="{{ $jsonUrl }}"
+                :show-limit="false"
+                :show-received="false"
+                :templates="{{ json_encode($templates) }}"
+            ></rss-generator>
         </div>
     </div>
 

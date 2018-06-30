@@ -142,6 +142,9 @@ class ReportsController extends Controller
         return view('reports.show', [
             'report' => $report,
             'templates' => Template::orderBy('name', 'asc')->get(),
+            'viewUrl' => action('ReportsController@show', ['id' => $report->id]),
+            'rssUrl' => action('ReportsController@showData', ['id' => $report->id, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@showData', ['id' => $report->id, 'format' => 'json']),
         ]);
     }
 
@@ -195,12 +198,12 @@ class ReportsController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Report $report
-     * @param  string $month
+     * @param  string $yearMonth
      * @return \Illuminate\Http\Response
      */
-    public function byMonth(Request $request, Report $report, $month)
+    public function byMonth(Request $request, Report $report, $yearMonth)
     {
-        list($year, $month) = explode('-', $month);
+        list($year, $month) = explode('-', $yearMonth);
         $year = intval($year);
         $month = intval($month);
         $currentMonth = Carbon::create($year, $month, 1);
@@ -220,6 +223,9 @@ class ReportsController extends Controller
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
             'templates' => Template::orderBy('name', 'asc')->get(),
+            'viewUrl' => action('ReportsController@byMonth', ['id' => $report->id, 'month' => $yearMonth]),
+            'rssUrl' => action('ReportsController@byMonthData', ['id' => $report->id, 'month' => $yearMonth, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@byMonthData', ['id' => $report->id, 'month' => $yearMonth, 'format' => 'json']),
         ]);
     }
 
@@ -271,12 +277,12 @@ class ReportsController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Report $report
-     * @param  string week
+     * @param  string yearWeek
      * @return \Illuminate\Http\Response
      */
-    public function byWeek(Request $request, Report $report, $week)
+    public function byWeek(Request $request, Report $report, $yearWeek)
     {
-        list($year, $week) = explode('-', $week);
+        list($year, $week) = explode('-', $yearWeek);
         $year = intval($year);
         $week = intval($week);
         $currentWeek = new Carbon(sprintf('%04dW%02d', $year, $week));
@@ -296,6 +302,9 @@ class ReportsController extends Controller
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
             'templates' => Template::orderBy('name', 'asc')->get(),
+            'viewUrl' => action('ReportsController@byWeek', ['id' => $report->id, 'week' => $yearWeek]),
+            'rssUrl' => action('ReportsController@byWeekData', ['id' => $report->id, 'week' => $yearWeek, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@byWeekData', ['id' => $report->id, 'week' => $yearWeek, 'format' => 'json']),
         ]);
     }
 
@@ -341,19 +350,6 @@ class ReportsController extends Controller
 
         $body = $this->asJson($request, $report, $docs, $groups);
         return $response->setContent($body)->header('Content-Type', 'application/json');
-    }
-
-    /**
-     * Display the specified resource as rss.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function rss(Request $request, $id)
-    {
-        return redirect()->action(
-            'ReportsController@data', ['id' => $id, 'format' => 'rss']
-        )->withInput();
     }
 
     /**
