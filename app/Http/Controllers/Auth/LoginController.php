@@ -50,6 +50,7 @@ class LoginController extends Controller
     {
         return view('auth.error', [
             'errors' => session()->get('saml2_error', []),
+            'saml_error' => session()->get('saml2_error_detail', []),
         ]);
     }
 

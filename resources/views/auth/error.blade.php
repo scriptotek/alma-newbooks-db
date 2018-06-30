@@ -12,7 +12,9 @@
                     <ul>
                         @foreach ($errors as $error)
                             <li>{{ $error }}</li>
-
+                        @endforeach
+                        @foreach ($saml_error as $error)
+                            <li>{{$error}}</li>
                         @endforeach
                     </ul>
 
