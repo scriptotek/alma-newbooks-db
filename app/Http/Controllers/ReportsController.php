@@ -10,10 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
-use function Functional\map;
 
 class ReportsController extends Controller
 {
@@ -77,62 +76,6 @@ class ReportsController extends Controller
             ->json(['docs' => $docs]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param Repository $cache
-     * @param  \App\Report $report
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, Repository $cache, Report $report)
-    {
-        if (!$request->get('format')) {
-            return view('reports.show', [
-                'report' => $report,
-                'templates' => Template::orderBy('name', 'asc')->get(),
-            ]);
-        }
-
-        $cacheKey = sprintf('report;i=%s;g=%s;f=%s', $report->id, $request->get('group_by', ''), $request->get('format'));
-        $body = $cache->get($cacheKey);
-        if ($body) {
-            $contentType = ($request->get('format') == 'rss') ? 'text/xml' : 'application/json';
-            return response($body, 200)
-                ->header('Content-Type', $contentType)
-                ->header('X-Cache-Hit', 1);
-        }
-
-        $limit = intval($request->get('limit', config('rss.limit')));
-
-        $builder = $report
-            ->getDocumentBuilder()
-            ->take($limit);
-
-        if (strtolower($request->get('received', 'true') == 'false')) {
-            $builder->nonReceived();
-        } else {
-            $builder->received();
-        }
-
-        if ($request->get('format') == 'rss') {
-            $body = $this->asRss($request, $report, $builder->getUnique());
-            $cache->put($cacheKey, $body, $this->ttl);
-            return response($body, 200)->header('Content-Type', 'text/xml');
-        }
-
-        if (!$request->get('group_by')) {
-            $body = $this->asJson($request, $report, $builder->getUnique());
-            $cache->put($cacheKey, $body, $this->ttl);
-            return response($body, 200)->header('Content-Type', 'application/json');
-        }
-        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
-
-        $body = $this->asJson($request, $report, $docs, $groups);
-        $cache->put($cacheKey, $body, $this->ttl);
-        return response($body, 200)->header('Content-Type', 'application/json');
-    }
-
     public function asRss(Request $request, Report $report, $documents, $subtitle = null)
     {
 
@@ -188,23 +131,115 @@ class ReportsController extends Controller
     }
 
     /**
-     * Display the specified resource for a given month.
+     * Display the report html view.
+     *
+     * @param Request $request
+     * @param Report $report
+     * @return Response
+     */
+    public function show(Request $request, Report $report)
+    {
+        return view('reports.show', [
+            'report' => $report,
+            'templates' => Template::orderBy('name', 'asc')->get(),
+        ]);
+    }
+
+    /**
+     * Get the report rss or json data. The response can be safely cached.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param Report $report
+     * @param string $format
+     * @return Response
+     */
+    public function showData(Request $request, Response $response, Report $report, $format)
+    {
+        // Set caching behaviour
+        $response->setLastModified($report->updated_at);
+        $response->setPublic();
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
+
+        $limit = intval($request->get('limit', config('rss.limit')));
+
+        $builder = $report
+            ->getDocumentBuilder()
+            ->take($limit);
+
+        if (strtolower($request->get('received', 'true') == 'false')) {
+            $builder->nonReceived();
+        } else {
+            $builder->received();
+        }
+
+        if ($format == 'rss') {
+            $body = $this->asRss($request, $report, $builder->getUnique());
+            return $response->setContent($body)->header('Content-Type', 'text/xml');
+        }
+
+        if (!$request->get('group_by')) {
+            $body = $this->asJson($request, $report, $builder->getUnique());
+            return $response->setContent($body)->header('Content-Type', 'application/json');
+        }
+        list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
+
+        $body = $this->asJson($request, $report, $docs, $groups);
+        return $response->setContent($body)->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * Display the report html view for a given month.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param Repository $cache
      * @param  \App\Report $report
      * @param  string $month
      * @return \Illuminate\Http\Response
      */
-    public function byMonth(Request $request, Repository $cache, Report $report, $month)
+    public function byMonth(Request $request, Report $report, $month)
     {
-        $cacheKey = sprintf('report;i=%s;f=%s;m=%s;g=%s', $report->id, $request->get('format'), $month, $request->get('group_by', ''));
-        $body = $cache->get($cacheKey);
-        if ($body) {
-            $contentType = ($request->get('format') == 'rss') ? 'text/xml' : 'application/json';
-            return response($body, 200)
-                ->header('Content-Type', $contentType)
-                ->header('X-Cache-Hit', 1);
+        list($year, $month) = explode('-', $month);
+        $year = intval($year);
+        $month = intval($month);
+        $currentMonth = Carbon::create($year, $month, 1);
+        $subtitle = ucfirst($currentMonth->formatLocalized('%B %Y'));
+
+        $prevMonth = $currentMonth->copy()->subMonth();
+        $prevUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $prevMonth->format('Y-m')]);
+        $prevLink = "<a href=\"$prevUrl\">« " . $prevMonth->formatLocalized('%B %Y') . "</a>";
+
+        $nextMonth = $currentMonth->copy()->addMonth();
+        $nextUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $nextMonth->format('Y-m')]);
+        $nextLink = "<a href=\"$nextUrl\">" . $nextMonth->formatLocalized('%B %Y') . " »</a>";
+
+        return view('reports.filtered', [
+            'report' => $report,
+            'header' => $subtitle,
+            'prevLink' => $prevLink,
+            'nextLink' => $nextLink,
+            'templates' => Template::orderBy('name', 'asc')->get(),
+        ]);
+    }
+
+    /**
+     * Get the report rss or json data for a given month. The response can be safely cached.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param Report $report
+     * @param string $month
+     * @param string $format
+     * @return Response
+     */
+    public function byMonthData(Request $request, Response $response, Report $report, $month, $format)
+    {
+        // Set caching behaviour
+        $response->setLastModified($report->updated_at);
+        $response->setPublic();
+        if ($response->isNotModified($request)) {
+            return $response;
         }
 
         list($year, $month) = explode('-', $month);
@@ -212,24 +247,6 @@ class ReportsController extends Controller
         $month = intval($month);
         $currentMonth = Carbon::create($year, $month, 1);
         $subtitle = ucfirst($currentMonth->formatLocalized('%B %Y'));
-
-        if (!$request->get('format')) {
-            $prevMonth = $currentMonth->copy()->subMonth();
-            $prevUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $prevMonth->format('Y-m')]);
-            $prevLink = "<a href=\"$prevUrl\">« " . $prevMonth->formatLocalized('%B %Y') . "</a>";
-
-            $nextMonth = $currentMonth->copy()->addMonth();
-            $nextUrl = action('ReportsController@byMonth', ['report' => $report->id, 'month' => $nextMonth->format('Y-m')]);
-            $nextLink = "<a href=\"$nextUrl\">" . $nextMonth->formatLocalized('%B %Y') . " »</a>";
-
-            return view('reports.filtered', [
-                'report' => $report,
-                'header' => $subtitle,
-                'prevLink' => $prevLink,
-                'nextLink' => $nextLink,
-                'templates' => Template::orderBy('name', 'asc')->get(),
-            ]);
-        }
 
         $builder = $report
             ->getDocumentBuilder()
@@ -240,35 +257,65 @@ class ReportsController extends Controller
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
 
-        if ($request->get('format') == 'rss') {
+        if ($format == 'rss') {
             $body = $this->asRss($request, $report, $docs[null], $subtitle);
-            $cache->put($cacheKey, $body, $this->ttl);
-            return response($body, 200)->header('Content-Type', 'text/xml');
+            return $response->setContent($body)->header('Content-Type', 'text/xml');
         }
 
         $body = $this->asJson($request, $report, $docs, $groups);
-        $cache->put($cacheKey, $body, $this->ttl);
-        return response($body, 200)->header('Content-Type', 'application/json');
+        return $response->setContent($body)->header('Content-Type', 'application/json');
     }
 
     /**
-     * Display the specified resource for a given week.
+     * Display the report html view for a given week.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param Repository $cache
      * @param  \App\Report $report
-     * @param  string $week
+     * @param  string week
      * @return \Illuminate\Http\Response
      */
-    public function byWeek(Request $request, Repository $cache, Report $report, $week)
+    public function byWeek(Request $request, Report $report, $week)
     {
-        $cacheKey = sprintf('report;i=%s;f=%s;w=%s;g=%s', $report->id, $request->get('format'), $week, $request->get('group_by', ''));
-        $body = $cache->get($cacheKey);
-        if ($body) {
-            $contentType = ($request->get('format') == 'rss') ? 'text/xml' : 'application/json';
-            return response($body, 200)
-                ->header('Content-Type', $contentType)
-                ->header('X-Cache-Hit', 1);
+        list($year, $week) = explode('-', $week);
+        $year = intval($year);
+        $week = intval($week);
+        $currentWeek = new Carbon(sprintf('%04dW%02d', $year, $week));
+        $subtitle = $currentWeek->formatLocalized('Uke %W, %Y');
+
+        $prevWeek = $currentWeek->copy()->subWeek();
+        $prevUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $prevWeek->format('Y-W')]);
+        $prevLink = "<a href=\"$prevUrl\">« " . $prevWeek->formatLocalized('Uke %W') . "</a>";
+
+        $nextWeek = $currentWeek->copy()->addWeek();
+        $nextUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $nextWeek->format('Y-W')]);
+        $nextLink = "<a href=\"$nextUrl\">" . $nextWeek->formatLocalized('Uke %W') . " »</a>";
+
+        return view('reports.filtered', [
+            'report' => $report,
+            'header' => $subtitle,
+            'prevLink' => $prevLink,
+            'nextLink' => $nextLink,
+            'templates' => Template::orderBy('name', 'asc')->get(),
+        ]);
+    }
+
+    /**
+     * Get the report rss or json data for a given week. The response can be safely cached.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param Report $report
+     * @param string $week
+     * @param string $format
+     * @return Response
+     */
+    public function byWeekData(Request $request, Response $response, Report $report, $week, $format)
+    {
+        // Set caching behaviour
+        $response->setLastModified($report->updated_at);
+        $response->setPublic();
+        if ($response->isNotModified($request)) {
+            return $response;
         }
 
         list($year, $week) = explode('-', $week);
@@ -276,24 +323,6 @@ class ReportsController extends Controller
         $week = intval($week);
         $currentWeek = new Carbon(sprintf('%04dW%02d', $year, $week));
         $subtitle = $currentWeek->formatLocalized('Uke %W, %Y');
-
-        if (!$request->get('format')) {
-            $prevWeek = $currentWeek->copy()->subWeek();
-            $prevUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $prevWeek->format('Y-W')]);
-            $prevLink = "<a href=\"$prevUrl\">« " . $prevWeek->formatLocalized('Uke %W') . "</a>";
-
-            $nextWeek = $currentWeek->copy()->addWeek();
-            $nextUrl = action('ReportsController@byWeek', ['report' => $report->id, 'week' => $nextWeek->format('Y-W')]);
-            $nextLink = "<a href=\"$nextUrl\">" . $nextWeek->formatLocalized('Uke %W') . " »</a>";
-
-            return view('reports.filtered', [
-                'report' => $report,
-                'header' => $subtitle,
-                'prevLink' => $prevLink,
-                'nextLink' => $nextLink,
-                'templates' => Template::orderBy('name', 'asc')->get(),
-            ]);
-        }
 
         $builder = $report
             ->getDocumentBuilder()
@@ -304,16 +333,14 @@ class ReportsController extends Controller
 
         list($docs, $groups) = $builder->getGrouped($report, $request->get('group_by'));
 
-        if ($request->get('format') == 'rss') {
+        if ($format == 'rss') {
             $body = $this->asRss($request, $report, $docs[null], $subtitle);
-            $cache->put($cacheKey, $body, $this->ttl);
-            return response($body, 200)->header('Content-Type', 'text/xml');
+            return $response->setContent($body)->header('Content-Type', 'text/xml');
 
         }
 
         $body = $this->asJson($request, $report, $docs, $groups);
-        $cache->put($cacheKey, $body, $this->ttl);
-        return response($body, 200)->header('Content-Type', 'application/json');
+        return $response->setContent($body)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -325,7 +352,7 @@ class ReportsController extends Controller
     public function rss(Request $request, $id)
     {
         return redirect()->action(
-            'ReportsController@show', ['id' => $id, 'format' => 'rss']
+            'ReportsController@data', ['id' => $id, 'format' => 'rss']
         )->withInput();
     }
 
@@ -386,7 +413,7 @@ class ReportsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreateReportRequest $request, $id)
+    public function update(CreateReportRequest $request, Repository $cache, $id)
     {
         $report = Report::findOrFail($id);
 
@@ -395,6 +422,9 @@ class ReportsController extends Controller
         $report->updated_by = Auth::user()->id;
 
         $report->save();
+
+        // Flush cache
+        $cache->tags('report:' . $report->id)->flush();
 
         return redirect()
             ->action('ReportsController@show', $id)

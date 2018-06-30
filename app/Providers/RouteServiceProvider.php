@@ -23,7 +23,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Route::pattern('report', '[0-9]+');
+        Route::pattern('template', '[0-9]+');
+        Route::pattern('week', '[0-9\-]+');
+        Route::pattern('month', '[0-9\-]+');
 
         parent::boot();
     }
@@ -36,10 +39,8 @@ class RouteServiceProvider extends ServiceProvider
     public function map()
     {
         $this->mapWebRoutes();
-
+        $this->mapPublicCacheableRoutes();
         $this->mapApiRoutes();
-
-        //
     }
 
     /**
@@ -56,6 +57,23 @@ class RouteServiceProvider extends ServiceProvider
             'namespace' => $this->namespace,
         ], function ($router) {
             require base_path('routes/web.php');
+        });
+    }
+
+    /**
+     * Define the public cacheable routes for the application.
+     *
+     * These routes do not receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapPublicCacheableRoutes()
+    {
+        Route::group([
+            'middleware' => 'public-cacheable',
+            'namespace' => $this->namespace,
+        ], function ($router) {
+            require base_path('routes/public-cacheable.php');
         });
     }
 

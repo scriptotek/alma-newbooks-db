@@ -129,7 +129,6 @@
                     window.history.replaceState(null, null, url);
 
                     let params = {
-                        format: 'json',
                         template: this.template,
                         limit: this.limit,
                         group_by: this.groupBy,
@@ -137,7 +136,7 @@
                     };
                     console.log(params);
                     this.error = null;
-                    axios.get(this.urlbase, {params: params})
+                    axios.get(this.urlbase + '.json', {params: params})
                     .then(
                         (response) => {
                             this.documents = response.data.documents;
