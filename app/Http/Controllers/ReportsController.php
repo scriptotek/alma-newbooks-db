@@ -166,17 +166,29 @@ class ReportsController extends Controller
             return $response;
         }
 
+        $sort = $request->get('sort', 'receiving_or_activation_date');
+        $sortDir = $request->get('sortDir', 'desc');
+
         $limit = intval($request->get('limit', config('rss.limit')));
+        $days = intval($request->get('days'));
 
         $builder = $report
             ->getDocumentBuilder()
             ->take($limit);
 
-        if (strtolower($request->get('received', 'true') == 'false')) {
+        if ($days > 0) {
+            $dateLimit = Carbon::now()->subDays($days);
+            $builder->where($sort, '>=', $dateLimit);
+        }
+
+        if (strtolower($request->get('received', 'true') === 'false')) {
             $builder->nonReceived();
         } else {
             $builder->received();
         }
+
+        $builder->orderBy($sort, $sortDir)
+             ->whereNotNull($sort);
 
         if ($format == 'rss') {
             $body = $this->asRss($request, $report, $builder->getUnique());

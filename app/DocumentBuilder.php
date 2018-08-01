@@ -41,14 +41,12 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
 
     public function nonReceived()
     {
-        return $this->orderBy(Document::SENT_DATE, 'desc')
-            ->whereNull(Document::RECEIVING_OR_ACTIVATION_DATE);
+        return $this->whereNull(Document::RECEIVING_OR_ACTIVATION_DATE);
     }
 
     public function received()
     {
-        return $this->orderBy(Document::RECEIVING_OR_ACTIVATION_DATE, 'desc')
-            ->whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE);
+        return $this->whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE);
     }
 
     /**
