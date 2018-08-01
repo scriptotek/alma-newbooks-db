@@ -36,6 +36,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
         'fund_ledger_name',
         'fund_type',
         'holding_id',
+        'permanent_call_number_type',
         'permanent_call_number',
         'library_name',
         'location_name',

@@ -112,6 +112,7 @@ class Document extends Model
         'library_name',
         'location_name',
         'permanent_call_number',
+        'permanent_call_number_type',
         'temporary_library_code',
         'temporary_library_name',
         'temporary_location_name',
