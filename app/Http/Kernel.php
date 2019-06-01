@@ -45,6 +45,7 @@ class Kernel extends HttpKernel
 
         'public-cacheable' => [
             'bindings',
+            \Barryvdh\Cors\HandleCors::class,
         ],
 
         'api' => [
