@@ -35,4 +35,14 @@ class User extends Authenticatable
     protected $casts = [
         'alma_ids' => 'array',
     ];
+
+    /**
+     * Get the user's Alma IDs.
+     *
+     * @return array
+     */
+    public function getAlmaIdsAttribute($value)
+    {
+        return is_null($value) ? [] : json_decode($value);
+    }
 }
