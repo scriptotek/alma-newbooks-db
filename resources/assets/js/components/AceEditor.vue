@@ -1,22 +1,18 @@
 <template>
-    <div>
-
+    <div style="height: 100%">
         <textarea :name="id" :id="id" class="form-control" v-model="value" style="display:none;"></textarea>
         <div :id="id + '-editor'" class="editor"></div>
-
     </div>
 </template>
 <style type="text/css" media="screen">
     .editor {
-        position: absolute; /* Added */
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        position: relative;
+        height: 100%;
+        width: 100%;
     }
 </style>
 <script>
-    export default{
+    export default {
         props: {
             id: {
                 type: String,
@@ -37,8 +33,6 @@
         },
         mounted(){
             var bus = this.$parent;  // TODO: Temporary solution until I figure out how to setup and require an eventbus Vue object
-
-//            ace.require("brace/ext/language_tools");
 
             var editor = window.ace.edit(this.id + '-editor');
             var textarea = document.getElementById(this.id);

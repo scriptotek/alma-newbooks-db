@@ -5,8 +5,13 @@
 // Variables
 @import "variables";
 
+// Glyphicons
+$icon-font-path: '~@neos21/bootstrap3-glyphicons/assets/fonts/';
+@import '~@neos21/bootstrap3-glyphicons';
+
 // Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import 'node_modules/bootstrap/scss/bootstrap';
+@import 'node_modules/bootstrap-vue/src/index.scss';
 
 .clickable-row:hover {
   color: blue;

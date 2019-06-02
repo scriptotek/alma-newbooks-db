@@ -13,8 +13,7 @@
 
     <!-- Styles -->
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
     <link href="/css/uio-app-top-bottom.css" type="text/css" rel="stylesheet" media="screen, print" />
     <link href="/css/uio-app-top-bottom-responsive.css" type="text/css" rel="stylesheet" media="screen and (max-width: 15.5cm) and (orientation : portrait), screen and (max-width: 17.5cm) and (orientation : landscape)"/>
 
@@ -36,78 +35,68 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-static-top">
-        <div class="container">
-            <div class="navbar-header">
+    <div id="app">
 
-                <!-- Collapsed Hamburger -->
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                    <span class="sr-only">Toggle Navigation</span>
-                    <span class="icon-bar"></span>
 
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
 
-                <!-- Branding Image -->
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    <!--<img src="/images/uio-app-small-black-eng-responsive.png" alt="">-->
-                    Tilvekstsdatabase for UBO
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{{ url('/') }}">Tilvekstsdatabase for UBO</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item " class="{{ Ekko::isActiveRoute('reports.*') }}">
+            <a class="nav-link" href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a>
+          </li>
+          @if (Auth::user())
+              <li class="nav-item " class="{{ Ekko::isActiveRoute('templates.*') }}">
+                <a class="nav-link" href="{{ action('TemplatesController@index') }}">{{ trans('templates.header') }}</a>
+              </li>
+              <li class="nav-item " class="{{ Ekko::isActiveRoute('documents.*') }}">
+                <a class="nav-link" href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a>
+              </li>
+              <li class="nav-item " class="{{ Ekko::isActiveRoute('users.*') }}">
+                <a class="nav-link" href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a>
+              </li>
+              <li class="nav-item " class="{{ Ekko::isActiveRoute('my-orders') }}">
+                <a class="nav-link" href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a>
+              </li>
+          @endif
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            @if (Auth::guest())
+                @if (config('auth.use_saml'))
+                  <li class="nav-item ">
+                    <a class="nav-link" href="{{ url('/saml2/login') }}">Login</a>
+                  </li>
+                @else
+                  <li class="nav-item ">
+                    <a class="nav-link" href="{{ url('/register') }}">Register</a>
+                  </li>
+                  <li class="nav-item ">
+                    <a class="nav-link" href="{{ url('/login') }}">Login</a>
+                  </li>
+                @endif
+            @else
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {{ Auth::user()->name }} <span class="caret"></span>
                 </a>
-            </div>
-
-            <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                <!-- Left Side Of Navbar -->
-                <ul class="nav navbar-nav">
-                    <li class="{{ Ekko::isActiveRoute('reports.*') }}"><a href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a></li>                    &nbsp;
-                    @if (Auth::user())
-                        <li class="{{ Ekko::isActiveRoute('templates.*') }}"><a href="{{ action('TemplatesController@index') }}">{{ trans('templates.header') }}</a></li>                    &nbsp;
-                        <li class="{{ Ekko::isActiveRoute('documents.*') }}"><a href="{{ action('DocumentsController@index') }}">{{ trans('documents.header') }}</a></li>
-                        <li class="{{ Ekko::isActiveRoute('users.*') }}"><a href="{{ action('UsersController@index') }}">{{ trans('users.header') }}</a></li>                    &nbsp;
-                        <li class="{{ Ekko::isActiveRoute('my-orders') }}"><a href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a></li>                    &nbsp;
-                    @endif
-                </ul>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- Authentication Links -->
-                    @if (Auth::guest())
-                        @if (config('auth.use_saml'))
-                            <li>
-                                <a href="{{ url('/saml2/login') }}">Login</a>
-                            </li>
-                        @else
-                            <li>
-                                <a href="{{ url('/register') }}">Register</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/login') }}">Login</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                {{ Auth::user()->name }} <span class="caret"></span>
-                            </a>
-
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a href="{{ url('/logout') }}"
-                                        onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
-                                        Logout
-                                    </a>
-
-                                    <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
-                                        {{ csrf_field() }}
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @endif
-                </ul>
-            </div>
-        </div>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{{ url('/logout') }}"
+                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                  >Logout</a>
+                 <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                    {{ csrf_field() }}
+                 </form>
+                </div>
+              </li>
+            @endif
+        </ul>
+      </div>
     </nav>
 
     @if (Session::has('status'))
@@ -151,7 +140,7 @@
       </div>
     </div>
     <!-- Page footer end -->
-
+    </div>
 
     <!-- Scripts -->
     <script src="{{ mix('/js/app.js') }}"></script>

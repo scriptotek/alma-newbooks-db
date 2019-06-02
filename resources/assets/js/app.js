@@ -6,9 +6,15 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
+import Vue from 'vue'
+import LivePreview from './components/LivePreview.vue';
+import AceEditor from './components/AceEditor.vue';
+import RssGenerator from './components/RssGenerator.vue';
+
 import BootstrapVue from 'bootstrap-vue';
 Vue.use(BootstrapVue);
+
+window.Vue = Vue
 
 
 /**
@@ -17,9 +23,9 @@ Vue.use(BootstrapVue);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('live-preview', require('./components/LivePreview.vue'));
-Vue.component('ace-editor', require('./components/AceEditor.vue'));
-Vue.component('rss-generator', require('./components/RssGenerator.vue'));
+Vue.component('live-preview', LivePreview);
+Vue.component('ace-editor', AceEditor);
+Vue.component('rss-generator', RssGenerator);
 
 Vue.prototype.trans = (key, params={}) => {
     return _.reduce(params, function(result, value, key) {
@@ -28,5 +34,5 @@ Vue.prototype.trans = (key, params={}) => {
 };
 
 const app = new Vue({
-    el: '#content'
+    el: '#app'
 });

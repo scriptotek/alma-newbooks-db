@@ -2,8 +2,6 @@
 
 @section('content')
 
-    <div class="container">
-
     @if (count($errors) > 0)
         <div class="alert alert-danger">
             <ul>
@@ -21,8 +19,8 @@
 
             <div>
                 @foreach ($statements as $stmt)
-                    <div class="form-group" id="inp{{ $stmt['idx']  }}">
-                        <div class="col-sm-3">
+                    <div class="row" id="inp{{ $stmt['idx']  }}">
+                        <div class="col-3">
                             @include('macros.selectbox', [
                                 'name' => 'k' . $stmt['idx'],
                                 'values' => $fields,
@@ -31,7 +29,7 @@
                                 'searchable' => true,
                             ])
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-3">
                             @include('macros.selectbox', [
                                 'name' => 'r' . $stmt['idx'],
                                 'values' => $relations,
@@ -39,7 +37,7 @@
                                 'class' => 'relation selectpicker',
                             ])
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col">
                             <input type="text" class="form-control value" name="v{{ $stmt['idx'] }}" value="{{ $stmt['val'] }}">
                         </div>
                     </div>
@@ -134,7 +132,7 @@
                 tmp.find('.value').attr('name', 'v' + idx).val('');
                 $('#inp1').parent().append(tmp);
 
-                $('.selectpicker').selectpicker();
+                // $('.selectpicker').selectpicker();
             });
         });
 

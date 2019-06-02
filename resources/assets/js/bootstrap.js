@@ -6,15 +6,18 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 
+window.Popper = require('popper.js').default;
 window.$ = window.jQuery = require('jquery');
-require('bootstrap-sass');
+
+require('bootstrap');
 require('bootstrap-select');
+$.fn.selectpicker.Constructor.BootstrapVersion = '4';
 
 /**
  * Load the ACE editor
  */
 
-require('brace');
+window.ace = require('brace');
 require('brace/mode/mysql');
 require('brace/mode/twig');
 require('brace/theme/monokai');
