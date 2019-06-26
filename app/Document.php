@@ -15,6 +15,10 @@ class Document extends Model
 
     const PO_CREATOR = 'po_creator';
 
+    const REPORTING_CODE = 'reporting_code';
+    const REPORTING_CODE_SECONDARY = 'reporting_code_secondary';
+    const REPORTING_CODE_TERTIARY = 'reporting_code_tertiary';
+
     /**
      * The accessors to append to the model's array form.
      *
@@ -68,7 +72,9 @@ class Document extends Model
         self::PO_ID,
         // 'po_creator',  // Hide because of privacy issues
         'acquisition_method',
-        'reporting_code',
+        self::REPORTING_CODE,
+        self::REPORTING_CODE_SECONDARY,
+        self::REPORTING_CODE_TERTIARY,
         'receiving_note',
         'cancellation_reason',
         'vendor_code',

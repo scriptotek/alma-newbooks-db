@@ -46,7 +46,9 @@ class HarvestPoLinesReport extends HarvestAnalytics
         'receiving_status',
         'sent_date',
         'source_type',
-        'reporting_code',
+        Document::REPORTING_CODE,
+        Document::REPORTING_CODE_SECONDARY,
+        Document::REPORTING_CODE_TERTIARY,
         'vendor_code',
 
         // 'bibliographic_level',
