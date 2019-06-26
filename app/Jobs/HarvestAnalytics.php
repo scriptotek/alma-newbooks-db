@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Scriptotek\Alma\Analytics\Report;
 use Scriptotek\Alma\Client as AlmaClient;
 
-class HarvestAnalytics implements ShouldQueue
+abstract class HarvestAnalytics implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 

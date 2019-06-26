@@ -6,6 +6,13 @@ use App\Document;
 
 class HarvestPrintBooksReport extends HarvestAnalytics
 {
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 600;
+
     protected $createIfNotExists = true;
 
     protected $path;
