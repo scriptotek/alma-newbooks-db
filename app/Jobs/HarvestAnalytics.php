@@ -17,6 +17,13 @@ abstract class HarvestAnalytics implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 3600;  // 60 min
+
     protected $alma;
     protected $createIfNotExists = true;
     protected $path;
