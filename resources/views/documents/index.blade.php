@@ -117,6 +117,23 @@
             });
         });
 
+        // Check the state of the relation dropdown menus. For menus set to "is null" or "not null",
+        // hide and disable (so no value is submitted) the corresponding input fields.
+        function checkRelations(evt) {
+            $('select.relation').each(function(idx, relation) {
+                let targetIndex = relation.name.substr(1),
+                    $target = $(relation),
+                    selectedRelation = $target.val(),
+                    $inputField = $(`input[name="v${targetIndex}"]`);
+                if (selectedRelation == 'nu' || selectedRelation == 'nn') {
+                    $inputField.attr("disabled", true).hide();
+                } else {
+                    $inputField.attr("disabled", false).show();
+                }
+
+            });
+        }
+
         // Quick filter
         $(function() {
             var idx = $('#inp1').parent().children().length;
@@ -132,8 +149,14 @@
                 tmp.find('.value').attr('name', 'v' + idx).val('');
                 $('#inp1').parent().append(tmp);
 
-                // $('.selectpicker').selectpicker();
+                tmp.find('.selectpicker').selectpicker();
+
+                tmp.find('select.relation').on('change', checkRelations);
+
             });
+
+            $('select.relation').on('change', checkRelations);
+            checkRelations();
         });
 
         // Enrich : TODO: Move to PHP
