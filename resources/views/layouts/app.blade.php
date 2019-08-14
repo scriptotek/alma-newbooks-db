@@ -70,7 +70,7 @@
             @if (Auth::guest())
                 @if (config('auth.use_saml'))
                   <li class="nav-item ">
-                    <a class="nav-link" href="{{ url('/saml2/login') }}">Login</a>
+                    <a class="nav-link" href="{{ route('saml2_login', 'uio') }}">Login</a>
                   </li>
                 @else
                   <li class="nav-item ">

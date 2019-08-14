@@ -6,15 +6,9 @@
     "type": "project",
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/danmichaelo/laravel-saml2"
-        }
-    ],
     "require": {
         "php": ">=7.0.0",
-        "aacotroneo/laravel-saml2": "dev-remove_mcrypt",
+        "aacotroneo/laravel-saml2": "^2.0",
         "arcanedev/log-viewer": "~4.0",
         "barryvdh/laravel-cors": "^0.11.3",
         "barryvdh/laravel-debugbar": "^3.1",
