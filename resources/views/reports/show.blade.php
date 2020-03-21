@@ -25,10 +25,10 @@
             </p>
 
             <p>
-                Includes items matching the following query:
+                This list includes documents that matches the following query:
             </p>
             <p>
-                <code>{{ $report->querystring }}</code>
+                <code><pre class="pre-scrollable" style="color: #822; font-size: 80%; padding-left: 2em;">{{ $report->getExpandedQuery() }}</pre></code>
             </p>
 
         @endif

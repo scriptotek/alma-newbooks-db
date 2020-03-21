@@ -47,6 +47,25 @@ class Report extends Model
         return $this->belongsTo('App\User', 'updated_by');
     }
 
+    public function getExpandedQuery()
+    {
+
+        // Expand %%only_first%% template
+
+        $baseQuery = str_replace('%%only_first%%', '', $this->querystring);
+        $onlyFirst = <<<EOT
+        -- The rest of the query below ensures that only the first item or portfolio per bibliographic record is included.
+        AND item_or_portfolio_id IN
+        (
+            SELECT DISTINCT ON (mms_id) item_or_portfolio_id
+            FROM tilvekst_documents
+            WHERE {$baseQuery} ORDER BY mms_id, item_or_portfolio_creation_date
+        )
+        EOT;
+
+        return str_replace('%%only_first%%', $onlyFirst, $this->querystring);
+    }
+
     /**
      * Get the document query builder.
      *
@@ -54,20 +73,9 @@ class Report extends Model
      */
     public function getDocumentBuilder()
     {
-        $querystring = $this->querystring;
-
-        // Expand %%only_first%% template
-        $querystring = str_replace('%%only_first%%', '
-            AND item_or_portfolio_id IN (
-                SELECT DISTINCT ON (mms_id) item_or_portfolio_id
-                FROM tilvekst_documents
-                WHERE ' . str_replace('%%only_first%%', '', $querystring) .
-                ' ORDER BY mms_id, item_or_portfolio_creation_date
-            )', $querystring);
-
         return Document::query()
-            ->where(function($query) use ($querystring) {
-                return $query->whereRaw($querystring);
+            ->where(function($query) {
+                return $query->whereRaw($this->getExpandedQuery());
             });
     }
 
