@@ -64,9 +64,13 @@ class ReportsController extends Controller
         }
 
         try {
-            $docs = $report->getDocumentBuilder()->received()->getUnique([
-                'limit' => intval($request->max_items),
-            ]);
+            $docs = $report->getDocumentBuilder()
+                ->received()
+                ->orderBy('receiving_or_activation_date', 'desc')
+                ->whereNotNull('receiving_or_activation_date')
+                ->getUnique([
+                    'limit' => intval($request->max_items),
+                ]);
         } catch (QueryException $e) {
                 return response()
                 ->json(['error' => $e->getMessage()], 500);
