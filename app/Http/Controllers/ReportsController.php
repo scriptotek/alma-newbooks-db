@@ -7,12 +7,13 @@ use App\Http\Requests\CreateReportRequest;
 use App\Report;
 use App\Template;
 use Carbon\Carbon;
+use FeedIo\Feed;
+use FeedIo\FeedIo;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-
 
 class ReportsController extends Controller
 {
@@ -77,36 +78,36 @@ class ReportsController extends Controller
         }
 
         return response()
-            ->json(['docs' => $docs]);
+            ->json([
+                'docs' => $docs,
+            ]);
     }
 
     public function asRss(Request $request, Report $report, $documents, $subtitle = null)
     {
+        $feedIo = app(FeedIo::class);
+        $feed = app(Feed::class);
 
         $template = Template::find($request->get('template'));
         if (is_null($template)) {
             return response('Ingen "template"-parameter ble angitt. Sjekk at du har lagt inn korrekt adresse', 400);
         }
 
-        $feed = \Rss::feed('2.0', 'UTF-8');
-
-        $feed->channel([
-            'title'       => $report->name . (!is_null($subtitle) ? ' : ' . $subtitle : ''),
-            'description' => 'Tilvekstliste',
-            'link'        => $report->link,
-            'ttl'         => 43200,
-        ]);
+        $feed->setTitle($report->name . (!is_null($subtitle) ? ' : ' . $subtitle : ''))
+            ->setUrl($report->link)
+            ->setDescription('Tilvekstliste');
 
         foreach ($documents as $doc) {
-            $feed->item([
-                'title'              => $doc->title,
-                'link'               => $doc->primo_link,
-                'description|cdata'  => $template->render($doc),
-                'pubDate'            => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
-            ]);
+            $item = $feed->newItem();
+            $item->setTitle($doc->title)
+                ->setDescription($template->render($doc))
+                ->setLink(htmlspecialchars($doc->primo_link))
+                ->setLastModified($doc->{Document::RECEIVING_OR_ACTIVATION_DATE});
+
+            $feed->add($item);
         }
 
-        return $feed;
+        return $feedIo->toRss($feed);
     }
 
     public function asJson(Request $request, Report $report, $documents, $groups = null, $subtitle = null)
@@ -146,9 +147,9 @@ class ReportsController extends Controller
         return view('reports.show', [
             'report' => $report,
             'templates' => Template::orderBy('name', 'asc')->get(),
-            'viewUrl' => action('ReportsController@show', ['id' => $report->id]),
-            'rssUrl' => action('ReportsController@showData', ['id' => $report->id, 'format' => 'rss']),
-            'jsonUrl' => action('ReportsController@showData', ['id' => $report->id, 'format' => 'json']),
+            'viewUrl' => action('ReportsController@show', ['report' => $report->id]),
+            'rssUrl' => action('ReportsController@showData', ['report' => $report->id, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@showData', ['report' => $report->id, 'format' => 'json']),
         ]);
     }
 
@@ -239,9 +240,9 @@ class ReportsController extends Controller
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
             'templates' => Template::orderBy('name', 'asc')->get(),
-            'viewUrl' => action('ReportsController@byMonth', ['id' => $report->id, 'month' => $yearMonth]),
-            'rssUrl' => action('ReportsController@byMonthData', ['id' => $report->id, 'month' => $yearMonth, 'format' => 'rss']),
-            'jsonUrl' => action('ReportsController@byMonthData', ['id' => $report->id, 'month' => $yearMonth, 'format' => 'json']),
+            'viewUrl' => action('ReportsController@byMonth', ['report' => $report->id, 'month' => $yearMonth]),
+            'rssUrl' => action('ReportsController@byMonthData', ['report' => $report->id, 'month' => $yearMonth, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@byMonthData', ['report' => $report->id, 'month' => $yearMonth, 'format' => 'json']),
         ]);
     }
 
@@ -318,9 +319,9 @@ class ReportsController extends Controller
             'prevLink' => $prevLink,
             'nextLink' => $nextLink,
             'templates' => Template::orderBy('name', 'asc')->get(),
-            'viewUrl' => action('ReportsController@byWeek', ['id' => $report->id, 'week' => $yearWeek]),
-            'rssUrl' => action('ReportsController@byWeekData', ['id' => $report->id, 'week' => $yearWeek, 'format' => 'rss']),
-            'jsonUrl' => action('ReportsController@byWeekData', ['id' => $report->id, 'week' => $yearWeek, 'format' => 'json']),
+            'viewUrl' => action('ReportsController@byWeek', ['report' => $report->id, 'week' => $yearWeek]),
+            'rssUrl' => action('ReportsController@byWeekData', ['report' => $report->id, 'week' => $yearWeek, 'format' => 'rss']),
+            'jsonUrl' => action('ReportsController@byWeekData', ['report' => $report->id, 'week' => $yearWeek, 'format' => 'json']),
         ]);
     }
 

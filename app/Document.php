@@ -50,6 +50,20 @@ class Document extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'receiving_date' => 'datetime:Y-m-d H:i:s',
+        'activation_date' => 'datetime:Y-m-d H:i:s',
+        'receiving_or_activation_date' => 'datetime:Y-m-d H:i:s',
+
+        'bib_creation_date' => 'date:Y-m-d',
+        'portfolio_creation_date' => 'date:Y-m-d',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -186,7 +200,7 @@ class Document extends Model
 
     public function getSelfLinkAttribute()
     {
-        return action('DocumentsController@show', ['id' => $this->id]);
+        return action('DocumentsController@show', ['document' => $this->id]);
     }
 
     public function getDateString($field)

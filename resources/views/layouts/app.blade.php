@@ -50,7 +50,7 @@
           <li class="nav-item " class="{{ Ekko::isActiveRoute('reports.*') }}">
             <a class="nav-link" href="{{ action('ReportsController@index') }}">{{ trans('reports.header') }}</a>
           </li>
-          @if (Auth::user())
+          @auth
               <li class="nav-item " class="{{ Ekko::isActiveRoute('templates.*') }}">
                 <a class="nav-link" href="{{ action('TemplatesController@index') }}">{{ trans('templates.header') }}</a>
               </li>
@@ -63,11 +63,11 @@
               <li class="nav-item " class="{{ Ekko::isActiveRoute('my-orders') }}">
                 <a class="nav-link" href="{{ action('MyOrdersController@index') }}">{{ trans('my-orders.header') }}</a>
               </li>
-          @endif
+          @endauth
         </ul>
 
         <ul class="navbar-nav ml-auto">
-            @if (Auth::guest())
+            @guest
                 @if (config('auth.use_saml'))
                   <li class="nav-item ">
                     <a class="nav-link" href="{{ route('saml2_login', 'uio') }}">Login</a>
@@ -80,7 +80,8 @@
                     <a class="nav-link" href="{{ url('/login') }}">Login</a>
                   </li>
                 @endif
-            @else
+            @endguest
+            @auth
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   {{ Auth::user()->name }} <span class="caret"></span>
@@ -94,7 +95,7 @@
                  </form>
                 </div>
               </li>
-            @endif
+            @endauth
         </ul>
       </div>
     </nav>

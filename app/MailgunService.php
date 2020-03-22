@@ -5,6 +5,7 @@ namespace App;
 use App\Importers\AnalyticsReportImporter;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 class MailgunService
@@ -69,7 +70,7 @@ class MailgunService
 
             $subject = $item->message->headers->subject;
 
-            $importer = array_get($this->importers, $subject);
+            $importer = Arr::get($this->importers, $subject);
 
             if (is_null($importer)) {
                 return;

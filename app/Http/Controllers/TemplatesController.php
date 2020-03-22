@@ -78,13 +78,10 @@ class TemplatesController extends Controller
         $body = $request->get('body');
 
         try {
-            $docs = map(Document::whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE)->take(10)->get(), function($doc) use ($template, $body) {
-                return [
-                    'title' => $doc->title,
-                    'receiving_or_activation_date' => $doc->receiving_or_activation_date,
-                    'repr' => $template->render($doc, $body),
-                ];
-            });
+            $docs = Document::whereNotNull(Document::RECEIVING_OR_ACTIVATION_DATE)
+                ->orderBy(Document::RECEIVING_OR_ACTIVATION_DATE, 'desc')
+                ->take(10)
+                ->get();
         } catch (\Twig_Error $e) {
             return response()
                 ->json(['error' => $e->getMessage()], 500);
@@ -93,7 +90,14 @@ class TemplatesController extends Controller
         return response()
             ->json([
                 'status' => 'ok',
-                'docs' => $docs,
+                'docs' => $docs->map(
+                    function(Document $doc) use ($template, $body) {
+                        return array_merge(
+                            $doc->toArray(),
+                            ['repr' => $template->render($doc, $body)]
+                        );
+                    }
+                ),
             ]);
     }
 

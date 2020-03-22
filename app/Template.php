@@ -58,9 +58,9 @@ class Template extends Model
             $all[$currentTemplateName] = $templateBody;
         }
 
-        $twig = new \Twig_Environment(new \Twig_Loader_Array($all));
+        $twig = new \Twig\Environment(new \Twig\Loader\ArrayLoader($all));
 
-        $humanDiffFilter = new \Twig_SimpleFilter('humandiff', function ($string, array $options = array()) {
+        $humanDiffFilter = new \Twig\TwigFilter('humandiff', function ($string, array $options = array()) {
             if (isset($options[0])) {
                 setlocale(\LC_TIME, $options[0]);
                 \Carbon\Carbon::setLocale(explode('_', $options[0])[0]);
@@ -69,7 +69,7 @@ class Template extends Model
         }, array('is_variadic' => true));
         $twig->addFilter($humanDiffFilter);
 
-        $dateformatFilter = new \Twig_SimpleFilter('dateformat', function ($string, array $options = array()) {
+        $dateformatFilter = new \Twig\TwigFilter('dateformat', function ($string, array $options = array()) {
             if (isset($options[1])) {
                 setlocale(\LC_TIME, $options[1]);
                 \Carbon\Carbon::setLocale(explode('_', $options[1])[0]);

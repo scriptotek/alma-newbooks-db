@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
 {
@@ -58,9 +59,9 @@ class DocumentBuilder extends \Illuminate\Database\Eloquent\Builder
     public function getUnique($options = [])
     {
         $docs = [];
-        $fieldName = array_get($options, 'fieldName', Document::MMS_ID);
+        $fieldName = Arr::get($options, 'fieldName', Document::MMS_ID);
 
-        $limit = array_get($options, 'limit') ?: $this->getQuery()->limit;
+        $limit = Arr::get($options, 'limit') ?: $this->getQuery()->limit;
 
         $this->take($limit * 4);  // quick hack. Proper grouping is quite difficult here:
         // - `distinct on (mms_id) *` does not work since we sort on receving_date

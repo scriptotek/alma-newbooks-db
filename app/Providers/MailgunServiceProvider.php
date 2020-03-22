@@ -5,16 +5,10 @@ namespace App\Providers;
 use App\MailgunService;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Support\DeferrableProvider;
 
-class MailgunServiceProvider extends ServiceProvider
+class MailgunServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
     /**
      * Register the application services.
      *

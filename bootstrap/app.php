@@ -1,5 +1,8 @@
 <?php
 
+// To get group writable log files
+umask(0002);
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -11,21 +14,13 @@
 |
 */
 
-if (!ini_get("auto_detect_line_endings")) {
-    ini_set("auto_detect_line_endings", '1');
-}
+$app = new Illuminate\Foundation\Application(
+    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
+);
 
 // To get month names in Norwegian
 setlocale(LC_TIME, 'nb_NO');
 \Carbon\Carbon::setLocale('no');
-
-// To get group writable log files
-umask(0002);
-
-
-$app = new Illuminate\Foundation\Application(
-    realpath(__DIR__.'/../')
-);
 
 /*
 |--------------------------------------------------------------------------

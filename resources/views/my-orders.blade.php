@@ -11,9 +11,9 @@
                     <a href="{{ action('DocumentsController@show', $doc->id) }}">{{ $doc }}</a>
                 </div>
                 <div>
-                    Location: {{$doc->location_name or '- '}}.
-                    Dewey: {{ $doc->dewey_classification or '-' }}.
-                    Receiving note: {{ $doc->receiving_note or '-' }}.
+                    Location: {{$doc->location_name ?? '- '}}.
+                    Dewey: {{ $doc->dewey_classification ?? '-' }}.
+                    Receiving note: {{ $doc->receiving_note ?? '-' }}.
                 </div>
                 <div>
                     @if ($doc->sent_date)
@@ -38,9 +38,9 @@
                     <a href="{{ action('DocumentsController@show', $doc->id) }}">{{ $doc }}</a>
                 </div>
                 <div>
-                    Location: {{$doc->location_name or '- '}}.
-                    Dewey: {{ $doc->dewey_classification or '-' }}.
-                    Receiving note: {{ $doc->receiving_note or '-' }}.
+                    Location: {{$doc->location_name ?? '- '}}.
+                    Dewey: {{ $doc->dewey_classification ?? '-' }}.
+                    Receiving note: {{ $doc->receiving_note ?? '-' }}.
                 </div>
                 <div>
                     Order sent: {{ $doc->sent_date }}

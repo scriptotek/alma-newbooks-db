@@ -82,7 +82,7 @@ class DocumentsController extends Controller
     {
         if (strlen($id) > 15) {
             $doc = Document::where('mms_id', '=', $id)->firstOrFail();
-            return redirect()->action('DocumentsController@show', ['id' => $doc->id]);
+            return redirect()->action('DocumentsController@show', ['document' => $doc->id]);
         }
         $doc = Document::where('id', '=', $id)->firstOrFail();
 

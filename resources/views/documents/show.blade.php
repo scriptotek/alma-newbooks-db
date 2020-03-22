@@ -3,7 +3,7 @@
 @section('content')
 
 	<div class="container" style="background:white;">
-		<h2>{{ $doc->barcode }}</h2>
+		<h2 class="pt-3">{{ $doc->barcode }}</h2>
 
 		<p>
 			<a href="{{ $doc->primo_link }}">Vis i Primo</a>
@@ -23,13 +23,13 @@
 				<strong>Series</strong>: {{ $doc->series }}
 			@endif
 			{{ $doc->author }}<br>
-				{{ $doc->publication_place or '(publication place missing)' }}
+				{{ $doc->publication_place ?? '(publication place missing)' }}
 				 :
-				{{ $doc->publisher or '(publisher missing)' }}
-				{{ $doc->publication_date or '(publication date missing)' }}
+				{{ $doc->publisher ?? '(publisher missing)' }}
+				{{ $doc->publication_date ?? '(publication date missing)' }}
 				<br>
 			<strong>Material type</strong>: {{$doc->material_type}}
-			<strong>Dewey</strong>: {{$doc->dewey_classification or '(not yet assigned)'}}
+			<strong>Dewey</strong>: {{$doc->dewey_classification ?? '(not yet assigned)'}}
 
 		</p>
 
@@ -115,25 +115,27 @@
 		@endforeach
 		</ul>
 
-		<h4>History for this item</h4>
-		<ul>
-			@foreach ($doc->changes()->orderBy('created_at', 'desc')->get() as $change)
-				<li>
-					{{ $change->created_at->subDay()->toDateString() }}:
-					<span style="color:#888; font-weight: 600;">{{ $change->key }}</span>
-					changed from
-					<span style="color: rgb(199,0,35);  font-weight: 600;">
-						{{ $change->old_value ?: '(no value)' }}
-					</span>
-					to
-					<span style="color: rgb(91,132,150); font-weight: 600;">
-						{{ $change->new_value }}
-					</span>
-				</li>
-			@endforeach
-		</ul>
+		@if ($doc->changes()->count())
+			<h4>History for this item</h4>
+			<ul>
+				@foreach ($doc->changes()->orderBy('created_at', 'desc')->get() as $change)
+					<li>
+						{{ $change->created_at->subDay()->toDateString() }}:
+						<span style="color:#888; font-weight: 600;">{{ $change->key }}</span>
+						changed from
+						<span style="color: rgb(199,0,35);  font-weight: 600;">
+							{{ $change->old_value ?: '(no value)' }}
+						</span>
+						to
+						<span style="color: rgb(91,132,150); font-weight: 600;">
+							{{ $change->new_value }}
+						</span>
+					</li>
+				@endforeach
+			</ul>
+		@endif
 
-		<h4>Details</h4>
+		<h4>Current data</h4>
 
 		<table class="table">
 			@foreach (App\Document::getFields() as $field)

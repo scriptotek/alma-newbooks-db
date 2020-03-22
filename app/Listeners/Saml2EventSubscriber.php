@@ -72,7 +72,7 @@ class Saml2EventSubscriber
 
         $user->save();
 
-        \Auth::login($user);
+        auth()->login($user);
     }
 
     /**

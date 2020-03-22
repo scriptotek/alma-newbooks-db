@@ -33,7 +33,11 @@
                 </div>
 
                 <div class="col col-sm-2">
-                    <a href="{{ action('TemplatesController@show', $id) }}" class="btn btn-default">{{ trans('cancel') }}</a>
+                    @if (is_null($id))
+                        <a href="{{ action('TemplatesController@index') }}" class="btn btn-light">{{ trans('cancel') }}</a>
+                    @else
+                        <a href="{{ action('TemplatesController@show', $id) }}" class="btn btn-light">{{ trans('cancel') }}</a>
+                    @endif
                     <button type="submit" class="btn btn-primary">{{ trans('save') }}</button>
                 </div>
 

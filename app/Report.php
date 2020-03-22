@@ -89,6 +89,6 @@ class Report extends Model
 
     public function getLinkAttribute()
     {
-        return action('ReportsController@show', ['id' => $this->id]);
+        return action('ReportsController@show', ['report' => $this->id]);
     }
 }

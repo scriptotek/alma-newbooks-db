@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Jobs\HarvestPrintBooksReport;
 use App\Jobs\HarvestTemporaryLocationReport;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
@@ -18,13 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
-        Carbon::serializeUsing(function ($carbon) {
-            return $carbon->toIso8601String();
-        });
-
         Queue::after(function (JobProcessed $event) {
-            $cmd = array_get($event->job->payload(), 'data.commandName');
+            $cmd = Arr::get($event->job->payload(), 'data.commandName');
             if ($cmd == HarvestPrintBooksReport::class) {
                 dispatch(new HarvestTemporaryLocationReport());
             }

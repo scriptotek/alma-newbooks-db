@@ -49,3 +49,15 @@ $icon-font-path: '~@neos21/bootstrap3-glyphicons/assets/fonts/';
     }
   }
 }
+
+#content > div {
+  padding-top: 20px;
+}
+
+h2, h3, h4 {
+  padding-top: 28px;
+}
+
+.bootstrap-select {
+  width: 260px !important;
+}

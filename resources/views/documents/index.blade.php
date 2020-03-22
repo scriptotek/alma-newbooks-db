@@ -13,14 +13,14 @@
     @endif
 
 
-    <form class="form-horizontal panel panel-default"  method="GET" action="{{ action('DocumentsController@index') }}">
+    <form class="form-horizontal card card-default"  method="GET" action="{{ action('DocumentsController@index') }}">
 
-        <div class="panel-body">
+        <div class="card-body">
 
             <div>
                 @foreach ($statements as $stmt)
-                    <div class="row" id="inp{{ $stmt['idx']  }}">
-                        <div class="col-3">
+                    <div class="d-flex" id="inp{{ $stmt['idx']  }}">
+                        <div class="p-1">
                             @include('macros.selectbox', [
                                 'name' => 'k' . $stmt['idx'],
                                 'values' => $fields,
@@ -29,7 +29,7 @@
                                 'searchable' => true,
                             ])
                         </div>
-                        <div class="col-3">
+                        <div class="p-1">
                             @include('macros.selectbox', [
                                 'name' => 'r' . $stmt['idx'],
                                 'values' => $relations,
@@ -37,7 +37,7 @@
                                 'class' => 'relation selectpicker',
                             ])
                         </div>
-                        <div class="col">
+                        <div class="p-1 flex-grow-1">
                             <input type="text" class="form-control value" name="v{{ $stmt['idx'] }}" value="{{ $stmt['val'] }}">
                         </div>
                     </div>
@@ -48,16 +48,16 @@
             <a href="{{ action('DocumentsController@resetForm') }}" class="btn btn-warning">Reset</a>
 
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
 
-            <label for="show">Show fields:</label>
+            <label for="show" class="font-weight-bold">Show fields:</label>
             <select id="show" name="show[]" class="selectpicker" multiple data-selected-text-format="count">
                 @foreach( $fields as $field)
                     <option value="{{ $field }}"{!! in_array($field, $show) ? ' selected="selected"' : '' !!}>{{ $field }}</option>
                 @endforeach
             </select>
 
-            <label for="sort">Sort by:</label>
+            <label for="sort" class="font-weight-bold">Sort by:</label>
             <select id="sort" name="sort" class="selectpicker">
                 @foreach( $fields as $field)
                     <option value="{{ $field }}"{!! ($field == $sort) ? ' selected="selected"' : '' !!}>{{ $field }}</option>
@@ -69,7 +69,7 @@
             </select>
 
 
-            <button type="submit" class="btn btn-primary">Go!</button>
+            <button type="submit" class="btn btn-primary">Search</button>
             </div>
         </form>
     </div>

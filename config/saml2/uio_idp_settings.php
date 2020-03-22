@@ -142,21 +142,21 @@ return $settings = array(
     // Contact information template, it is recommended to suply a technical and support contacts
     'contactPerson' => array(
         'technical' => array(
-            'givenName' => 'name',
-            'emailAddress' => 'no@reply.com'
+            'givenName' => 'UREAL IT/AV-drift',
+            'emailAddress' => 'ureal-it-av-drift@ub.uio.no'
         ),
         'support' => array(
-            'givenName' => 'Support',
-            'emailAddress' => 'no@reply.com'
+            'givenName' => 'UREAL IT/AV-drift',
+            'emailAddress' => 'ureal-it-av-drift@ub.uio.no'
         ),
     ),
 
     // Organization information template, the info in en_US lang is recomended, add more if required
     'organization' => array(
         'en-US' => array(
-            'name' => 'Name',
-            'displayname' => 'Display Name',
-            'url' => 'http://url'
+            'name' => 'University of Oslo Library',
+            'displayname' => 'University of Oslo Library',
+            'url' => 'https://ub.uio.no'
         ),
     ),
 
