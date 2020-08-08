@@ -29,6 +29,7 @@ abstract class HarvestAnalytics implements ShouldQueue
     protected $path;
     protected $filter;
     protected $headers;
+    protected $t0;
 
     /**
      * List of changes we're not interested in tracking.
@@ -36,6 +37,26 @@ abstract class HarvestAnalytics implements ShouldQueue
     protected $ignoredChanges = [
         'dewey_classification_top_line',
     ];
+
+    protected function getMemoryUsage()
+    {
+        $size = memory_get_usage();
+        $units = array('b','kB','NB','GB','TB','PB');
+        return @round($size / pow(1024, ($i = floor(log($size,1024)))), 2) .  ' ' . $units[$i];
+    }
+
+    protected function log($level, $msg, array $context = [])
+    {
+        if (!$this->t0) {
+            $this->t0 = time();
+        }
+        $dt = time() - $this->t0;
+
+        $dt = floor($dt / 60) . ':' . ($dt % 60);
+        $mem = $this->getMemoryUsage();
+        $msg = "[$dt / $mem] $msg";
+        \Log::log($level, $msg, $context);
+    }
 
     protected function handleChange(Document $doc, $key, $old_value, $new_value)
     {
@@ -79,6 +100,7 @@ abstract class HarvestAnalytics implements ShouldQueue
      */
     protected function importReport(Report $report)
     {
+        $this->t0 = time();
         $shortName = basename($report->path);
         $keyCache = [];
         $n = 0; $m = 0; $cn = 0; $cm = 0;
@@ -89,9 +111,13 @@ abstract class HarvestAnalytics implements ShouldQueue
                 continue;
             }
 
+            if ($n % 1000 == 0) {
+                $this->log('debug', "[$shortName] Checked $n records so far");
+            }
+
             if (!$doc->exists) {
                 $cn++;
-                \Log::debug("[$shortName] Imported new document.", [
+                $this->log('debug', "[$shortName] Imported new document.", [
                     'mms_id' => $doc->mms_id,
                     'sent' => $doc->{Document::SENT_DATE},
                     'received' => $doc->{Document::RECEIVING_OR_ACTIVATION_DATE},
@@ -103,7 +129,7 @@ abstract class HarvestAnalytics implements ShouldQueue
                 foreach ($doc->getDirty() as $k => $v) {
                     $this->handleChange($doc, $k, $doc->getOriginal($k), $v);
 
-                    \Log::debug("[$shortName] Updated existing document.", [
+                    $this->log('debug', "[$shortName] Updated existing document.", [
                         'id' => $doc->id,
                         'attribute' => $k,
                         'old_value' => $doc->getOriginal($k),
@@ -114,10 +140,9 @@ abstract class HarvestAnalytics implements ShouldQueue
 
             $doc->save();
             $this->saved($doc);
-
             $m++;
         }
-        \Log::info("[$shortName] Import completed.", [
+        $this->log('info', "[$shortName] Import completed.", [
             'docs_checked' => $n,
             'new' => $cn,
             'modified' => $cm,
@@ -132,6 +157,7 @@ abstract class HarvestAnalytics implements ShouldQueue
      */
     public function handle(AlmaClient $alma)
     {
+        $alma->maxAttemptsOnServerError = 10;
         $report = $alma->analytics->get($this->path, $this->headers, $this->filter);
         $this->importReport($report);
     }
