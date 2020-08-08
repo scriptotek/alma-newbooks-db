@@ -26,11 +26,11 @@ class AnalyticsReportImporter
             throw new InvalidRowException();
         }
 
-
+        /*
         if (isset($row[Document::PO_ID]) && !preg_match('/POL-/', $row[Document::PO_ID])) {
             \Log::warning("$intro Expected PO line reference to start with 'POL-', but got '" . $row[Document::PO_ID] . "'");
             throw new InvalidRowException();
-        }
+        }*/
     }
 
     protected static function cleanRow($row, $reportShortName)
