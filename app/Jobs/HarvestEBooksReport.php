@@ -30,6 +30,7 @@ class HarvestEBooksReport extends HarvestAnalytics
         'publication_date',
         'publisher',
         'series',
+        'subjects',
         'title',
         'collection_name',
         'activation_date',

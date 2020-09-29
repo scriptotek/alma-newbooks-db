@@ -126,6 +126,7 @@ class Document extends Model
         'isbn',
         'base_status',
         'material_type',
+        'subjects',
 
         // Physical holding
         'holding_id',

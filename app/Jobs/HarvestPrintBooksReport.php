@@ -31,6 +31,7 @@ class HarvestPrintBooksReport extends HarvestAnalytics
         'publication_place',
         'publisher',
         'series',
+        'subjects',
         'title',
         'fund_ledger_code',
         'fund_ledger_name',
