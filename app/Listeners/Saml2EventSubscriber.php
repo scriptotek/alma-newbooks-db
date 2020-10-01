@@ -63,8 +63,8 @@ class Saml2EventSubscriber
             $user->uio_id = $uio_id;
             $user->name = $attrs['cn'][0];
             $user->email = $attrs['mail'][0];
-            $user->alma_ids = $alma_user_data->getIds();
-            \Session::flash('status', '🤗 Velkommen til ub-tilvekst! Vi fant deg i Alma med følgende ID-er: ' . implode(', ', $alma_user_data->getIds()));
+            $user->alma_ids = $alma_user_data->getIdentifiers()->all();
+            \Session::flash('status', '🤗 Velkommen til ub-tilvekst! Vi fant deg i Alma med følgende ID-er: ' . implode(', ', $alma_user_data->getIdentifiers()->all()));
         }
 
         $user->saml_id = $uid;
